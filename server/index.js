@@ -42,7 +42,7 @@ async function run() {
   }
 }
 
-app.get("/testGet", async (req, res) => {
+app.get("/getPreguntes", async (req, res) => {
   try {
     const collection = db.collection("preguntas");
     const data = await collection.find().toArray();
@@ -52,7 +52,7 @@ app.get("/testGet", async (req, res) => {
   }
 });
 
-app.get("/testGet/:id", async (req, res) => {
+app.get("/getPregunta/:id", async (req, res) => {
   try {
     const collection = db.collection("preguntas");
     const data = await collection.findOne({
@@ -64,7 +64,7 @@ app.get("/testGet/:id", async (req, res) => {
   }
 });
 
-app.post("/testInsert", async (req, res) => {
+app.post("/insertPregunta", async (req, res) => {
   try {
     const collection = db.collection("preguntas");
     const result = await collection.insertOne(req.body);
@@ -74,7 +74,7 @@ app.post("/testInsert", async (req, res) => {
   }
 });
 
-app.delete("/testDelete/:id", async (req, res) => {
+app.delete("/deletePregunta/:id", async (req, res) => {
   try {
     const collection = db.collection("preguntas");
     const result = await collection.deleteOne({ id: parseInt(req.params.id) });
@@ -84,7 +84,7 @@ app.delete("/testDelete/:id", async (req, res) => {
   }
 });
 
-app.put("/testUpdate/:id", async (req, res) => {
+app.put("/updatePregunta/:id", async (req, res) => {
   try {
     const collection = db.collection("preguntas");
     const result = await collection.updateOne(
