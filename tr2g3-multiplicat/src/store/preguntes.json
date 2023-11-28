@@ -1,0 +1,258 @@
+{
+    "preguntes": [
+      {
+        "id": 2,
+        "pregunta": "Quina és la fórmula per calcular l'àrea d'un cercle?",
+        "respostes": [
+          {
+            "resposta": "2 * pi * r",
+            "correcta": false
+          },
+          {
+            "resposta": "pi * r ^ 2",
+            "correcta": true
+          },
+          {
+            "resposta": "pi * r",
+            "correcta": false
+          },
+          {
+            "resposta": "pi / r ^ 2",
+            "correcta": false
+          }
+        ],
+        "resposta_correcta": "pi * r ^ 2"
+      },
+      {
+        "id": 3,
+        "pregunta": "Quina és la fórmula per calcular el perímetre d'un quadrat?",
+        "respostes": [
+          {
+            "resposta": "4 * a",
+            "correcta": true
+          },
+          {
+            "resposta": "2 * a",
+            "correcta": false
+          },
+          {
+            "resposta": "a ^ 2",
+            "correcta": false
+          },
+          {
+            "resposta": "a / 2",
+            "correcta": false
+          }
+        ],
+        "resposta_correcta": "4 * a"
+      },
+      {
+        "id": 4,
+        "pregunta": "Quina és la fórmula de la llei de Ohm en electrònica?",
+        "respostes": [
+          {
+            "resposta": "U = R * I",
+            "correcta": true
+          },
+          {
+            "resposta": "I = U / R",
+            "correcta": false
+          },
+          {
+            "resposta": "R = U / I",
+            "correcta": false
+          },
+          {
+            "resposta": "P = U * I",
+            "correcta": false
+          }
+        ],
+        "resposta_correcta": "U = R * I"
+      },
+      {
+        "id": 5,
+        "pregunta": "Quina és la fórmula de la llei de Coulomb en física?",
+        "respostes": [
+          {
+            "resposta": "F = k * q1 * q2 / r^2",
+            "correcta": true
+          },
+          {
+            "resposta": "F = q1 * q2 / (4 * pi * r^2)",
+            "correcta": false
+          },
+          {
+            "resposta": "F = m * a",
+            "correcta": false
+          },
+          {
+            "resposta": "F = k * q1 / r",
+            "correcta": false
+          }
+        ],
+        "resposta_correcta": "F = k * q1 * q2 / r^2"
+      },
+      {
+        "id": 6,
+        "pregunta": "Quina és la derivada de la funció f(x) = x^2?",
+        "respostes": [
+          {
+            "resposta": "2 * x",
+            "correcta": true
+          },
+          {
+            "resposta": "x",
+            "correcta": false
+          },
+          {
+            "resposta": "3 * x^2",
+            "correcta": false
+          },
+          {
+            "resposta": "2 * x^3",
+            "correcta": false
+          }
+        ],
+        "resposta_correcta": "2 * x"
+      },
+      {
+        "id": 7,
+        "pregunta": "Quina és la fórmula de l'energia cinètica en física?",
+        "respostes": [
+          {
+            "resposta": "E = 1/2 * m * v^2",
+            "correcta": true
+          },
+          {
+            "resposta": "E = m * g * h",
+            "correcta": false
+          },
+          {
+            "resposta": "E = F * d",
+            "correcta": false
+          },
+          {
+            "resposta": "E = m / a",
+            "correcta": false
+          }
+        ],
+        "resposta_correcta": "E = 1/2 * m * v^2"
+      },
+      {
+        "id": 8,
+        "pregunta": "Quina és la fórmula de l'àrea d'un triangle?",
+        "respostes": [
+          {
+            "resposta": "A = 1/2 * b * h",
+            "correcta": true
+          },
+          {
+            "resposta": "A = b * h",
+            "correcta": false
+          },
+          {
+            "resposta": "A = l * w",
+            "correcta": false
+          },
+          {
+            "resposta": "A = pi * r^2",
+            "correcta": false
+          }
+        ],
+        "resposta_correcta": "A = 1/2 * b * h"
+      },
+      {
+        "id": 9,
+        "pregunta": "Quina és la fórmula de la mitjana aritmètica?",
+        "respostes": [
+          {
+            "resposta": "(x1 + x2 + ... + xn) / n",
+            "correcta": true
+          },
+          {
+            "resposta": "x1 * x2 * ... * xn",
+            "correcta": false
+          },
+          {
+            "resposta": "sqrt(x1 * x2 * ... * xn)",
+            "correcta": false
+          },
+          {
+            "resposta": "(x1 * x2 * ... * xn) / n",
+            "correcta": false
+          }
+        ],
+        "resposta_correcta": "(x1 + x2 + ... + xn) / n"
+      },
+      {
+        "id": 10,
+        "pregunta": "Quina és la fórmula de la llei de Hooke en física?",
+        "respostes": [
+          {
+            "resposta": "F = k * x",
+            "correcta": true
+          },
+          {
+            "resposta": "F = m * a",
+            "correcta": false
+          },
+          {
+            "resposta": "F = P / A",
+            "correcta": false
+          },
+          {
+            "resposta": "F = k / x",
+            "correcta": false
+          }
+        ],
+        "resposta_correcta": "F = k * x"
+      },
+      {
+        "id": 11,
+        "pregunta": "Quina és la fórmula de la llei de Snell en òptica?",
+        "respostes": [
+          {
+            "resposta": "n1 * sin(theta1) = n2 * sin(theta2)",
+            "correcta": true
+          },
+          {
+            "resposta": "n1 * cos(theta1) = n2 * cos(theta2)",
+            "correcta": false
+          },
+          {
+            "resposta": "n1 * tan(theta1) = n2 * tan(theta2)",
+            "correcta": false
+          },
+          {
+            "resposta": "n1 * sin(theta1) / n2 = sin(theta2)",
+            "correcta": false
+          }
+        ],
+        "resposta_correcta": "n1 * sin(theta1) = n2 * sin(theta2)"
+      },
+      {
+        "id": 12,
+        "pregunta": "Quina és la fórmula de la llei de Boyle en termodinàmica?",
+        "respostes": [
+          {
+            "resposta": "P1 * V1 = P2 * V2",
+            "correcta": true
+          },
+          {
+            "resposta": "P * V = n * R * T",
+            "correcta": false
+          },
+          {
+            "resposta": "P1 / T1 = P2 / T2",
+            "correcta": false
+          },
+          {
+            "resposta": "V1 / T1 = V2 / T2",
+            "correcta": false
+          }
+        ],
+        "resposta_correcta": "P1 * V1 = P2 * V2"
+      }
+    ]
+  }
+  
