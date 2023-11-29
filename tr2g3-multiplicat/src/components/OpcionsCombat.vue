@@ -1,21 +1,28 @@
 <template>
-  <v-app>
-    <v-layout justify-center align-end fill-height>
+  <v-row>
+    <v-col>
       <v-card style="margin: 0; padding: 0;">
         <v-card-title>
           {{ preguntesActuals[0].pregunta }}
         </v-card-title>
         <v-row>
           <v-col cols="12">
-            <v-btn class="ma-2" :disabled="answerSelected" :color="getButtonColor(respuesta)" v-for="respuesta in preguntesActuals[0].respostes" :key="respuesta" @click="selectAnswer(respuesta)">{{ respuesta.resposta }}</v-btn>
+            <v-btn class="ma-2" :disabled="answerSelected" :color="getButtonColor(respuesta)"
+              v-for="respuesta in preguntesActuals[0].respostes" :key="respuesta" @click="selectAnswer(respuesta)">{{
+                respuesta.resposta }}
+            </v-btn>
           </v-col>
         </v-row>
         <v-btn v-if="answerSelected" color="primary" @click="nextQuestion">Següent pregunta</v-btn>
       </v-card>
+    </v-col>
+    <v-col>
       <Calculadora />
-    </v-layout>
-  </v-app>
+    </v-col>
+  </v-row>
 </template>
+
+<style scoped></style>
 
 <script>
 import { useAppStore } from '../store/app';

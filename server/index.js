@@ -1,17 +1,23 @@
 const express = require("express");
+const socketIO = require("socket.io");
+const { join } = require("node:path");
 const app = express();
-const cors = require("cors");
-const PORT = 3000;
-const mysql = require('mysql2/promise');
-const bodyParser = require('body-parser')
-const path = require("path");
-const { spawn } = require('child_process');
-var session = require('express-session')
-const bbdd=require('./bbdd.js');
+const server = require("http").Server(app);
 
+const io = socketIO(server);
 
-app.get("/preguntas", function (req, res) {
-    numPreguntes=req.params
-    preguntes=bbdd.obtenirPreguntes(numPreguntes)
-    res.json(preguntes)
-})
+app.get("/", (req, res) => {
+  res.redirect("http://localhost:3000");
+});
+io.on("connection", (socket) => {
+  console.log("a user connected");
+
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+});
+
+PORT = 3001;
+server.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}/`);
+});
