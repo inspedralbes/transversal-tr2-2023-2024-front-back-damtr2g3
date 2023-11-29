@@ -7,7 +7,7 @@ const routes = [
     path: '/',
     name: 'CombatScreen',
     component: CombatScreen
-  },
+  }
 ]
 
 const router = createRouter({

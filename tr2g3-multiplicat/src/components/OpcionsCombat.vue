@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid fill-height>
+  <v-app>
     <v-layout justify-center align-end fill-height>
       <v-card style="margin: 0; padding: 0;">
         <v-card-title>
@@ -12,16 +12,20 @@
         </v-row>
         <v-btn v-if="answerSelected" color="primary" @click="nextQuestion">Següent pregunta</v-btn>
       </v-card>
-      <calculadora />
+      <Calculadora />
     </v-layout>
-  </v-container>
+  </v-app>
 </template>
 
 <script>
 import { useAppStore } from '../store/app';
 import { ref } from 'vue';
+import Calculadora from './Calculadora.vue';
 
 export default {
+  components: {
+    Calculadora,
+  },
   setup() {
     const store = useAppStore();
     var preguntesActuals = store.preguntes.preguntes;
