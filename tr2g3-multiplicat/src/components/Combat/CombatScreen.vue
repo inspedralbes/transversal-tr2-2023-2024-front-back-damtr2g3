@@ -8,7 +8,7 @@
 
 
 <script>
-import { useAppStore } from '../store/app';
+import { useAppStore } from '@/store/app';
 import OpcionsCombat from './OpcionsCombat.vue';
 import Enemic from './Enemic.vue';
 import Jugador from './Jugador.vue'; 

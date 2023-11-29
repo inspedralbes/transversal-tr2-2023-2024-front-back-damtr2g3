@@ -76,11 +76,11 @@
             },
             async showAnimation() {
                 this.$refs.pokeball.toggleOpen();
-                await this.$nextTick(); // Wait for the DOM to update
+                await this.$nextTick();
                 return new Promise(resolve => setTimeout(() => {
                     this.$refs.pokeball.toggleOpen();
                     resolve();
-                }, 2000)); // Wait for 2 seconds
+                }, 1000));
             },
         },
     };

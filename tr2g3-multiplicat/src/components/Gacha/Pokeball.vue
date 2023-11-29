@@ -24,8 +24,8 @@
   <style scoped>
   .pokeball {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: 300px;
+    height: 300px;
     background: #fff;
     border: 10px solid #000;
     border-radius: 50%;

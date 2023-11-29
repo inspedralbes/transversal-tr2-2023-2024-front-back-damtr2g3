@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { useAppStore } from '../store/app';
+import { useAppStore } from '@/store/app';
 import { ref } from 'vue';
 import Calculadora from './Calculadora.vue';
 

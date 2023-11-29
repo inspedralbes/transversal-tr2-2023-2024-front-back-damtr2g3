@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { useAppStore } from '../store/app';
+import { useAppStore } from '@/store/app';
 import { watch, ref } from 'vue';
 
 export default {

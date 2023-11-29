@@ -1,7 +1,7 @@
 // Composables
 import { createRouter, createWebHistory } from 'vue-router'
-import CombatScreen from '@/components/CombatScreen.vue'
-import GachaScreen from '@/components/GachaScreen.vue'
+import CombatScreen from '@/components/Combat/CombatScreen.vue'
+import GachaScreen from '@/components/Gacha/GachaScreen.vue'
 
 const routes = [
   {
