@@ -8,7 +8,7 @@ export const useAppStore = defineStore('app', {
     //Jugador
     user: {
       imatge: 'https://cdn.pixabay.com/photo/2016/03/31/19/58/avatar-1295429_960_720.png',
-      puntuacio: 0,
+      puntuacio: 1000,
     },
     
     //Enemic
@@ -23,5 +23,11 @@ export const useAppStore = defineStore('app', {
     reduirVidaEnemic(quantitat) {
       this.enemic.enemyLife -= quantitat;
     },
+    afegirPuntuacio(quantitat) {
+      this.user.puntuacio += quantitat;
+    },
+    reduirPuntuacio(quantitat) {
+      this.user.puntuacio -= quantitat;
+    }
   },
 });
