@@ -1,3 +1,33 @@
+<script setup>
+import { useAppStore } from '../store/app';
+import OpcionsCombat from './OpcionsCombat.vue';
+import Enemic from './Enemic.vue';
+import Jugador from './Jugador.vue';
+import { socket } from '@/services/socket';
+</script>
+
+<script>
+
+export default {
+  components: {
+    Enemic,
+    Jugador,
+    OpcionsCombat
+  },
+  setup() {
+    const store = useAppStore();
+
+    return {
+      store,
+    };
+  },
+  methods: {
+
+  },
+  computed: {
+  },
+};
+</script>
 <template>
   <v-app>
     <v-row>
@@ -18,35 +48,3 @@
   </v-app>
 </template>
 
-<script>
-import { useAppStore } from '../store/app';
-import OpcionsCombat from './OpcionsCombat.vue';
-import Enemic from './Enemic.vue';
-import Jugador from './Jugador.vue';
-import io from 'socket.io-client';
-
-export default {
-  components: {
-    Enemic,
-    Jugador,
-    OpcionsCombat
-  },
-  data() {
-    return {
-      socket: null,
-      store
-    };
-  },
-  methods: {
-
-  },
-  computed: {
-  },
-  mounted() {
-    const store = useAppStore();
-    this.socket = io('http://localhost:3001');
-  }
-};
-</script>
-
-;
