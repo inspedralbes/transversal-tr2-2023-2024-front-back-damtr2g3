@@ -58,16 +58,36 @@ io.on("connection", (socket) => {
                 available = false;
               }
             });
-          if (available) {
-            lobby.players.push({
-              name: data.name,
-              score: 0,
-              status: "connected"
+            if (available) {
+              lobby.players.push({
+                name: data.name,
+                score: 0,
+                status: "connected",
+              });
+              socket.join(data.lobby_code);
+            } else {
+              connectionError = true;
+              io.to(socket.id).emit("connection error", {
+                errorMsg: "Name not available",
+              });
+            }
+          } else {
+            connectionError = true;
+            io.to(socket.id).emit("connection error", {
+              errorMsg: "Lobby is full",
             });
-            socket.join(data.lobby_code);
           }
+        } else {
+          connectionError = true;
+          io.to(socket.id).emit("connection error", {
+            errorMsg: "Lobby not found",
+          });
         }
-      }
+      });
+    } else {
+      connectionError = true;
+      io.to(socket.id).emit("connection error", {
+        errorMsg: "No lobbies found",
       });
     }
   });
@@ -75,6 +95,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("A user disconnected");
   });
+});
 
 function sendLobbyList() {
   io.emit("lobbies list", lobbies);
