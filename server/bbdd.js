@@ -10,15 +10,18 @@ const client = new MongoClient(uri, {
 const dbName = "G3-Proj2";
 //connexio mongo
 
+//adminADMIN1 a22celgariba_Proj2-G3 a22celgariba_admin
 
+module.exports={obtenirPreguntes, login, ObtenirInfoUsuari}
 
-export async function obtenirPreguntes(numPreguntes){
+async function obtenirPreguntes(numPreguntes){
     await client.connect();
     const db = client.db(dbName);
     const col = db.collection("preguntas");
     let preguntes=[]
     if(numPreguntes>0){
-        let preguntes= db.col.aggregate(
+        console.log(numPreguntes)
+        let preguntes= col.aggregate(
             [
                 { $match: { _id: { $nin: preguntes.map(pregunta => pregunta._id) } } },
                 { $sample: { size: numPreguntes } } 
@@ -26,8 +29,31 @@ export async function obtenirPreguntes(numPreguntes){
         )
     }
     else
-        preguntes=db.preguntas.find()
+    console.log(numPreguntes)
+        preguntes= col.find()
 
-    preguntes=JSON.parse(preguntes)
+    //preguntes=JSON.parse(preguntes)
     return preguntes
 }//obtenir un numero n de preguntes desde mongo
+
+async function login(connection){
+        try {
+            const [rows, fields] = await connection.execute('SELECT  username, contrasenya FROM alumnes');
+            const usuariosJSON = JSON.stringify(rows);
+            return usuariosJSON;
+        } catch (error) {
+            console.error('Error al obtener usuarios:', error.message);
+            throw error;
+        }
+    }//revisar llista usuaris per trobar un match de uses
+
+async function ObtenirInfoUsuari(usuari, connection){
+    try {
+        const [rows, fields] = await connection.execute('SELECT * FROM Usuari WHERE usuario='+"'"+usuari+"'");
+        const usuariosJSON = JSON.stringify(rows);
+        return usuariosJSON;
+    } catch (error) {
+        console.error('Error al obtener usuarios:', error.message);
+        throw error;
+    }
+}//retornar la informacio del usuari desitjat 
