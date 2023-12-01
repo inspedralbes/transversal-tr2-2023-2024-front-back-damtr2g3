@@ -92,6 +92,28 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("ready user", () => {
+    let readyUsers = 0;
+
+    lobbies.forEach((lobby) => {
+      if ((lobby.lobby_code = socket.data.lobby_code)) {
+        lobby.players.forEach((player) => {
+          if (player.name == socket.data.name) {
+            player.ready = true;
+          }
+        });
+        lobby.players.forEach((player) => {
+          if (player.ready) {
+            readyUsers++;
+          }
+        });
+        if (readyUsers == lobby.players.length) {
+          io.to(socket.data.lobby_code).emit("start game");
+        }
+      }
+    });
+  });
+
   socket.on("disconnect", () => {
     console.log("A user disconnected");
   });
