@@ -1,12 +1,24 @@
 // Composables
 import { createRouter, createWebHistory } from "vue-router";
 import CombatScreen from "@/components/CombatScreen.vue";
+import JoinGame from "@/components/JoinGame.vue";
+import CreateGame from "@/components/CreateGame.vue";
 
 const routes = [
   {
-    path: "/",
+    path: "/combat",
     name: "CombatScreen",
     component: CombatScreen,
+  },
+  {
+    path: "/JoinGame",
+    name: "JoinGame",
+    component: JoinGame,
+  },
+  {
+    path: "/CreateGame",
+    name: "CreateGame",
+    component: CreateGame,
   },
 ];
 

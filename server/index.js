@@ -42,6 +42,7 @@ io.on("connection", (socket) => {
       });
     }
 
+    console.log(lobbies);
     sendLobbyList();
   });
 
@@ -90,6 +91,8 @@ io.on("connection", (socket) => {
         errorMsg: "No lobbies found",
       });
     }
+
+    console.log(lobbies);
   });
 
   socket.on("ready user", () => {
