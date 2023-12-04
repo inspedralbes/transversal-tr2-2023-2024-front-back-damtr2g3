@@ -1,11 +1,18 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const PORT = 3000;
+const PORT = 3001;
 const bbdd=require('./bbdd.js');
-const mysql=require('mysql2')
+const mysql=require('mysql2/promise')
 
-app.use(cors());
+app.use(cors(
+    {
+        "origin": "*",
+        "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+        "preflightContinue": false,
+        "optionsSuccessStatus": 204
+      }
+))
 app.use(express.json());
 app.listen(PORT, () => {
     console.log('Server running');
@@ -31,7 +38,7 @@ app.post("/login", function (req, res) {
         autoritzacio = { "autoritzacio": false };
     
     
-        usuaris = bbdd.login(usuari, passwd, connection).then((usuaris) => {
+        usuaris = bbdd.login(connection).then((usuaris) => {
             usuaris = JSON.parse(usuaris)
             for (var i = 0; i < usuaris.length && usuariTrobat == false; i++) {
     
@@ -46,22 +53,40 @@ app.post("/login", function (req, res) {
             res.json(autoritzacio)
         })
 })//crida al login, return bool sutoritzacio
-//comprobar informacio de login
-app.post("/infoUser",  function(req, res){
-    if(req.body.logged==true){
-        usuari=usuari=req.body.user
-        info= bbdd.ObtenirInfoUsuari(usuari, connection)
-    }
-    else{
-        info="No autoritzat"
-    }
+app.post("/loginProf", function (req, res) {
+    usuari=req.body.user
+    passwd=req.body.passwd
+    let usuariTrobat = false;
+    autoritzacio = { "autoritzacio": false };
+
+
+    usuaris = bbdd.loginProf(connection).then((usuaris) => {
+        usuaris = JSON.parse(usuaris)
+        for (var i = 0; i < usuaris.length && usuariTrobat == false; i++) {
+
+
+            if (usuaris[i].username == usuari) {
+                if (usuaris[i].contrasenya == passwd) {
+                    usuariTrobat = true;
+                }
+            }
+        }
+        autoritzacio.autoritzacio = usuariTrobat;
+        res.json(autoritzacio)
+    })
+})//crida al login, return bool sutoritzacio
+app.post("/infoUser",  async function(req, res){
+    usuari=usuari=req.body.user
+    info=await  bbdd.ObtenirInfoUsuari(usuari, connection) 
+    console.log(info)
     info=JSON.parse(info)
+    console.log(info)
     res.json(info)
 })//obtenir dades personals usuari
-
 app.post("/restablirPasswd", function(req, res){
     usuariActualitzat=req.body.user
     novaContrasenya=req.body.passwd
     bbdd.restablirContrasenya(usuariActualitzat, novaContrasenya, connection)
-})
+})//cambiar la contrasenya existent per una de nova
+
 

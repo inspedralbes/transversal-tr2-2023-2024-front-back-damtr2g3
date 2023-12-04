@@ -12,7 +12,7 @@ const dbName = "G3-Proj2";
 
 //contrasenya:adminADMIN1 bbdd:a22celgariba_Proj2-G3 user:a22celgariba_admin--------dades MySql
 
-module.exports={obtenirPreguntes, login, ObtenirInfoUsuari, CambiarContrasena}
+module.exports={obtenirPreguntes, login, ObtenirInfoUsuari, CambiarContrasena, loginProf}
 
 async function obtenirPreguntes(numPreguntes){
     await client.connect();
@@ -45,11 +45,21 @@ async function login(connection){
             console.error('Error al obtener usuarios:', error.message);
             throw error;
         }
-}//revisar llista usuaris per trobar un match de uses
+}//revisar llista alumnes per trobar un match de user
 
+async function loginProf(connection){
+    try {
+        const [rows, fields] = await connection.execute('SELECT  username, contrasenya FROM Profesors');
+        const usuariosJSON = JSON.stringify(rows);
+        return usuariosJSON;
+    } catch (error) {
+        console.error('Error al obtener usuarios:', error.message);
+        throw error;
+    }
+}//revisar llista alumnes per trobar un match de user
 async function ObtenirInfoUsuari(usuari, connection){
     try {
-        const [rows, fields] = await connection.execute('SELECT * FROM Usuari WHERE usuario='+"'"+usuari+"'");
+        const [rows, fields] = await connection.execute('SELECT * FROM alumnes  WHERE username='+"'"+usuari+"'");
         const usuariosJSON = JSON.stringify(rows);
         return usuariosJSON;
     } catch (error) {

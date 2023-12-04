@@ -38,6 +38,10 @@ export const useAppStore = defineStore('app', {
     },
     getLoginInfo(){
       return this.loginInfo;
+    },
+    logejarUser(username){
+      this.loggedIn=true;
+      this.username=username
     }
   },
 });

@@ -12,8 +12,9 @@
               <v-form >
                 <v-text-field v-model="username" label="Username"></v-text-field>
                 <v-text-field v-model="password" label="Password" type="password"></v-text-field>
-                <v-btn @click="validateLoginBtn(username, password)" type="submit" color="primary">Login</v-btn>
+                
               </v-form>
+              <v-btn @click="validateLoginBtn(username, password)" type="submit" color="primary">Login</v-btn>
             </v-card-text>
           </v-card>
         </v-col>
@@ -24,7 +25,7 @@
     
     <script>
     import { validateLogin } from '@/CommunicationsManager';
-    
+    import { useAppStore } from '../store/app';
     export default {
       data() {
         return {
@@ -33,23 +34,31 @@
         };
       },
       methods: {
+        GuardarLogin(username){
+          this.store.loginInfo.loggedIn=true
+          this.store.loginInfo.username=username
+        },
         async validateLoginBtn(username, password){
-          var autoritzacio = validateLogin(username, password);
-          console.log('Logging in with:', username,", ", password);
+          console.log("hola")
+          var autoritzacio = await validateLogin(username, password);
+          console.log(autoritzacio);
           if(autoritzacio.autoritzacio) {
+            this.GuardarLogin(username)
             console.log('we are in');
             this.$router.push('/mainmenu');
           }else{
             console.log('you fucked up');
           }
-          
-
-        },
-        /*login() {
-          console.log('Logging in with:', this.username, this.password);
-          this.$router.push('/mainmenu');
-        },*/
+        }
+        
       },
+      setup() {
+            const store = useAppStore();
+            store
+            return{
+              store
+            }
+        }
     };
     </script>
     
