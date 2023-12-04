@@ -12,7 +12,7 @@ const dbName = "G3-Proj2";
 
 //adminADMIN1 a22celgariba_Proj2-G3 a22celgariba_admin
 
-module.exports={obtenirPreguntes, login, ObtenirInfoUsuari}
+module.exports={obtenirPreguntes, login, ObtenirInfoUsuari, CambiarContrasena}
 
 async function obtenirPreguntes(numPreguntes){
     await client.connect();
@@ -57,3 +57,7 @@ async function ObtenirInfoUsuari(usuari, connection){
         throw error;
     }
 }//retornar la informacio del usuari desitjat 
+
+async function CambiarContrasena(usuari, passw, connection){
+
+}

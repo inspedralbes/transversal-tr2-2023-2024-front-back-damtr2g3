@@ -59,5 +59,9 @@ app.post("/infoUser",  function(req, res){
     res.json(info)
 })//obtenir dades personals usuari
 
-
+app.post("/restablir contrasenya", function(req, res){
+    usuariActualitzat=req.body.user
+    novaContrasenya=req.body.passwd
+    restablirContrasenya(usuariActualitzat, novaContrasenya, connection)
+})
 

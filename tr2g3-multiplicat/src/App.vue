@@ -5,3 +5,10 @@
 <script setup>
   //
 </script>
+
+<style>
+body{
+  background: url(./assets/tallgrass.png);
+  
+}
+</style>

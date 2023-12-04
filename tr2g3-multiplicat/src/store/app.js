@@ -3,6 +3,11 @@ import preguntes from './preguntes.json'; // Asumeix que el fitxer JSON es diu '
 
 export const useAppStore = defineStore('app', {
   state: () => ({
+    loginInfo: {
+      loggedIn: false,
+      username: '',
+      image: '',
+    },
     preguntes: preguntes,
 
     //Jugador
@@ -20,8 +25,19 @@ export const useAppStore = defineStore('app', {
     
   }),
   actions: {
+    setLoginInfo({ loggedIn, username, image }) {
+      this.loginInfo.loggedIn = loggedIn;
+      this.loginInfo.username = username;
+      this.loginInfo.image = image;
+    },
     reduirVidaEnemic(quantitat) {
       this.enemic.enemyLife -= quantitat;
     },
+    isLoggedIn(){
+      return this.loginInfo.loggedIn;
+    },
+    getLoginInfo(){
+      return this.loginInfo;
+    }
   },
 });

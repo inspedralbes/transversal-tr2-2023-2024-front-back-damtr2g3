@@ -3,7 +3,7 @@
     <v-content>
       <v-container>
         <v-row>
-          <v-col cols="12">
+          <v-col cols="10">
             <v-text-field
               label="Resultat"
               v-model="result"

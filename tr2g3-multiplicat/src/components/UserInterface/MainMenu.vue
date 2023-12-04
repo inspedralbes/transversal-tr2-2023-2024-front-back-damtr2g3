@@ -1,0 +1,52 @@
+<template>
+  <v-container style="margin-top: 75px;">
+    <v-text-field class="code_field"></v-text-field>
+    <v-btn type="submit" color="primary" style="margin-left: 700px;" @click="this.$router.push('/lobby')">Join Game Room</v-btn>
+  </v-container>
+
+  <v-container style="margin-top: 100px;">
+    <v-row aria-rowspan="2">
+      <v-col md="4">
+        <v-btn class="menu_option_button" style="background-color:forestgreen;" @click="this.$router.push('/profile')">
+            Profile
+        </v-btn>
+        <v-btn class="menu_option_button" style="margin-top: 300px; background-color:aqua;" @click="this.$router.push('/')">
+            Single Player Mode
+        </v-btn>
+      </v-col>
+      <v-col md="4">
+        <v-btn class="menu_option_button" style="background-color:yellow;" @click="this.$router.push('/stats')">
+          Statistics
+        </v-btn>
+        <v-btn class="menu_option_button" style="margin-top: 300px; background-color:orange;" @click="this.$router.push('/gacha')">
+          Gachapon
+        </v-btn>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
+  
+  
+  <script>
+  export default {
+    data() {
+      
+    },
+    methods: {
+      passwordReset() {
+        
+      }
+    },
+  };
+  </script>
+  
+<style>
+.menu_option_button{
+  margin-left: 200px;
+  text-align: center;
+  width: 800px;
+}
+.code_field input{
+  color: white !important;
+}
+</style>
