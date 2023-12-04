@@ -40,10 +40,13 @@ io.on("connection", (socket) => {
         players: [],
         maxPlayers: data.max_players,
       });
-    }
 
-    console.log(lobbies);
-    sendLobbyList();
+      console.log(lobbies);
+      console.log("--------------------")
+      sendLobbyList();
+    } else {
+      io.to(socket.id).emit("Lobby exists", data);
+    }
   });
 
   socket.on("join lobby", (data) => {
