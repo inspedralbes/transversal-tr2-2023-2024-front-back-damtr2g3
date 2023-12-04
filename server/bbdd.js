@@ -49,7 +49,7 @@ async function login(connection){
 
 async function loginProf(connection){
     try {
-        const [rows, fields] = await connection.execute('SELECT  username, contrasenya FROM Profesors');
+        const [rows, fields] = await connection.execute('SELECT  correu, contrasenya FROM Profesors');
         const usuariosJSON = JSON.stringify(rows);
         return usuariosJSON;
     } catch (error) {
