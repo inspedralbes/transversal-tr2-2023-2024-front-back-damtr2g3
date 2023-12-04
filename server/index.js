@@ -17,7 +17,7 @@ app.use(cors());
 let lobbies = [];
 
 io.on("connection", (socket) => {
-  console.log("A user connected");
+  // console.log("A user connected");
 
   socket.on("get lobbies", () => {
     sendLobbyList();
@@ -42,7 +42,7 @@ io.on("connection", (socket) => {
       });
     }
 
-    console.log(lobbies);
+    // console.log(lobbies);
     sendLobbyList();
   });
 
@@ -66,6 +66,9 @@ io.on("connection", (socket) => {
                 status: "connected",
               });
               socket.join(data.lobby_code);
+              socket.data.current_lobby = data.lobby_code;
+              socket.data.name = data.name;
+              sendPlayerList(socket);
             } else {
               connectionError = true;
               io.to(socket.id).emit("connection error", {
@@ -92,7 +95,7 @@ io.on("connection", (socket) => {
       });
     }
 
-    console.log(lobbies);
+    // console.log(lobbies);
   });
 
   socket.on("ready user", () => {
@@ -118,9 +121,26 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("A user disconnected");
+    let lobby = lobbies.find(
+      (lobby) => lobby.lobby_code == socket.data.current_lobby
+    );
+    if (lobby) {
+      lobby.players = lobby.players.filter(
+        (player) => player.name != socket.data.name
+      );
+      io.to(socket.data.current_lobby).emit("player list", lobby.players);
+    }
   });
 });
+
+function sendPlayerList(socket) {
+  let currentLobby = lobbies.find(
+    (lobby) => lobby.lobby_code == socket.data.current_lobby
+  );
+  if (currentLobby) {
+    io.to(socket.data.current_lobby).emit("player list", currentLobby.players);
+  }
+}
 
 function sendLobbyList() {
   io.emit("lobbies list", lobbies);

@@ -5,12 +5,18 @@
             <input type="number" v-model="lobbyCode" class="lobby-input" placeholder="Enter the lobby code" />
             <button @click="joinGame" class="join-button">Join</button>
         </div>
+        <div class="grid">
+            <div class="player" v-for="player in store.players" :key="player.name">
+                {{ player.name }}
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import { useAppStore } from "../store/app";
 import { socket } from "@/services/socket";
+import { ref } from 'vue';
 
 export default {
     name: "JoinGame",
@@ -25,6 +31,11 @@ export default {
 
         socket.on("start game", (data) => {
             this.$router.push("/");
+        });
+
+        socket.on("player list", (players) => {
+            console.log(players);
+            store.players = players;
         });
 
         return {
@@ -90,5 +101,17 @@ export default {
 
 .join-button:active {
     background-color: #3e8e41;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.player {
+    border: 1px solid #ccc;
+    padding: 20px;
+    text-align: center;
 }
 </style>

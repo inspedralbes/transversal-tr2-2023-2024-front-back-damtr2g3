@@ -7,8 +7,8 @@
                 <input type="text" id="subject" v-model="subject" />
             </div>
             <div class="form-group">
-                <label for="maxPlayers">Max Players:</label>
-                <input type="number" id="maxPlayers" v-model="maxPlayers" />
+                <label for="max_players">Max Players:</label>
+                <input type="number" id="max_players" v-model="max_players" />
             </div>
             <button @click="generateRandomInt">Generate</button>
             <div v-if="randomInt">
@@ -30,7 +30,7 @@ export default {
     data() {
         return {
             subject: "",
-            maxPlayers: null,
+            max_players: null,
             randomInt: null,
             lobbyCode: null,
         };
@@ -44,11 +44,11 @@ export default {
     },
     methods: {
         newGameLobby() {
-            if (this.subject && this.maxPlayers && this.randomInt) {
+            if (this.subject && this.max_players && this.randomInt) {
                 const gameData = {
                     lobby_code: this.randomInt,
                     subject: this.subject,
-                    maxPlayers: this.maxPlayers,
+                    max_players: this.max_players,
                 };
                 socket.emit("newLobby", gameData);
                 this.lobbyCode = this.randomInt;
