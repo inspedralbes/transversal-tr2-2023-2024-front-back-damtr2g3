@@ -10,7 +10,7 @@ const client = new MongoClient(uri, {
 const dbName = "G3-Proj2";
 //connexio mongo
 
-//adminADMIN1 a22celgariba_Proj2-G3 a22celgariba_admin
+//contrasenya:adminADMIN1 bbdd:a22celgariba_Proj2-G3 user:a22celgariba_admin--------dades MySql
 
 module.exports={obtenirPreguntes, login, ObtenirInfoUsuari, CambiarContrasena}
 
@@ -45,7 +45,7 @@ async function login(connection){
             console.error('Error al obtener usuarios:', error.message);
             throw error;
         }
-    }//revisar llista usuaris per trobar un match de uses
+}//revisar llista usuaris per trobar un match de uses
 
 async function ObtenirInfoUsuari(usuari, connection){
     try {
@@ -59,5 +59,12 @@ async function ObtenirInfoUsuari(usuari, connection){
 }//retornar la informacio del usuari desitjat 
 
 async function CambiarContrasena(usuari, passw, connection){
-
-}
+    try {
+        const [rows, fields] = await connection.execute('UPDATE contrasenya FROM alumnes WHERE username='+"'"+usuari+"'"+'Set contrasenya='+ "'"+passw+"'");
+        const usuariosJSON = JSON.stringify(rows);
+        return usuariosJSON;
+    } catch (error) {
+        console.error('Error al actualitzar contrasenya:', error.message);
+        throw error;
+    }
+}//cambia la contrasenya del usuari per una nova
