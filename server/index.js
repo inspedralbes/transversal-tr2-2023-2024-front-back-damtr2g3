@@ -6,7 +6,13 @@ const bbdd=require('./bbdd.js');
 const mysql=require('mysql2/promise')
 var nodemailer = require('nodemailer');
 
-app.use(cors())
+app.use(cors(
+    {"origin": "*",
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "preflightContinue": false,
+    "optionsSuccessStatus": 204
+    }
+))
 app.use(express.json());
 app.listen(PORT, () => {console.log('Server running');});
 const connection = mysql.createPool({
@@ -101,9 +107,9 @@ app.post("/registrarUsuari", function (req, res) {
     alumne={
         username:req.body.username,
         nom:req.body.nom,
-        contrasenya:req.body.passw,
-        fotoPerfil:req.body.foto,
-        correu:req.body.email,
+        contrasenya:req.body.contrasenya,
+        fotoPerfil:req.body.fotoPerfil,
+        correu:req.body.correu,
         classe:req.body.classe
     }
     bbdd.crearAlumne(alumne, connection)

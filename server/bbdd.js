@@ -99,9 +99,9 @@ async function classesProf(idProf, connection){
 }//join de clase_profesor amb classe per retornar info de totes les classes que dona un profesor especific
 async function crearAlumne(alumne, connection){
     try {
+        console.log(alumne)
         const {username, nom, contrasenya, fotoPerfil, correu, classe }=alumne
-        const [result] = await connection.execute
-        ('INSERT INTO alumnes (username, correu, contrasenya, fotoPerfil, classe, Nom) VALUES(?,?,?,?,?,?)',[username, correu, contrasenya, fotoPerfil, classe, nom])
+        const [result] = await connection.execute('INSERT INTO alumnes (username, correu, contrasenya, fotoPerfil, classe, Nom) VALUES(?,?,?,?,?,?)',[username, correu, contrasenya, fotoPerfil, classe, nom])
        
     } catch (error) {
         console.error('Error al insertar usuarios:', error.message);
