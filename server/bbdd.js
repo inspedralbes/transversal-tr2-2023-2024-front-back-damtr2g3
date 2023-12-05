@@ -12,7 +12,7 @@ const dbName = "G3-Proj2";
 
 //contrasenya:adminADMIN1 bbdd:a22celgariba_Proj2-G3 user:a22celgariba_admin--------dades MySql
 
-module.exports={obtenirPreguntes, login, ObtenirInfoUsuari, CambiarContrasena, loginProf, dadesAlumnesClasse}
+module.exports={obtenirPreguntes, login, ObtenirInfoUsuari, CambiarContrasena, loginProf, dadesAlumnesClasse, classesProf, crearAlumne, validarUsuari, eliminarUsuari, ObtenirInscrits}
 
 async function obtenirPreguntes(numPreguntes){
     await client.connect();
@@ -35,7 +35,6 @@ async function obtenirPreguntes(numPreguntes){
     //preguntes=JSON.parse(preguntes)
     return preguntes
 }//obtenir un numero n de preguntes desde mongo
-
 async function login(connection){
         try {
             const [rows, fields] = await connection.execute('SELECT  username, contrasenya FROM alumnes');
@@ -46,7 +45,6 @@ async function login(connection){
             throw error;
         }
 }//revisar llista alumnes per trobar un match de user
-
 async function loginProf(connection){
     try {
         const [rows, fields] = await connection.execute('SELECT  correu, contrasenya FROM Profesors');
@@ -67,7 +65,6 @@ async function ObtenirInfoUsuari(usuari, connection){
         throw error;
     }
 }//retornar la informacio del usuari desitjat 
-
 async function CambiarContrasena(usuari, passw, connection){
     try {
         const [rows, fields] = await connection.execute('UPDATE contrasenya FROM alumnes WHERE username='+"'"+usuari+"'"+'Set contrasenya='+ "'"+passw+"'");
@@ -78,14 +75,66 @@ async function CambiarContrasena(usuari, passw, connection){
         throw error;
     }
 }//cambia la contrasenya del usuari per una nova
-
 async function dadesAlumnesClasse(classe, connection){
     try {
-        const [rows, fields] = await connection.execute('SELECT Nom, username, fotoPerfil, correu FROM alumnes  WHERE classe='+"'"+classe+"'");
+        const [rows, fields] = await connection.execute('SELECT Nom, username, fotoPerfil, correu FROM alumnes  WHERE classe='+"'"+classe+"'"+" AND autoritzada=true");
         const usuariosJSON = JSON.stringify(rows);
         return usuariosJSON;
     } catch (error) {
         console.error('Error al obtener usuarios:', error.message);
         throw error;
     }
-}
+}//retorna tots els alumnes que pertanyen a una classe en concret
+async function classesProf(idProf, connection){
+    try{
+        operacioBBDD=('Select DISTINCT curs, nomClasse From classe JOIN clase_Profesor On clase_Profesor.idProf='+"'"+idProf+"'")
+        const [rows, fields] = await connection.execute(operacioBBDD);
+        const usuariosJSON = JSON.stringify(rows);
+        return usuariosJSON;
+    }catch (error) {
+        console.error('Error al obtener usuarios:', error.message);
+        throw error;
+    }
+
+}//join de clase_profesor amb classe per retornar info de totes les classes que dona un profesor especific
+async function crearAlumne(alumne, connection){
+    try {
+        const {username, nom, contrasenya, fotoPerfil, correu, classe }=alumne
+        const [result] = await connection.execute
+        ('INSERT INTO alumnes (username, correu, contrasenya, fotoPerfil, classe, Nom) VALUES(?,?,?,?,?,?)',[username, correu, contrasenya, fotoPerfil, classe, nom])
+       
+    } catch (error) {
+        console.error('Error al insertar usuarios:', error.message);
+        throw error;
+    }
+}//insereix un alumne sense validar a la bbdd
+async function validarUsuari(id, connection){
+    try {
+        const [rows, fields] = await connection.execute('UPDATE alumnes WHERE idAlum='+"'"+id+"'"+" Set autoritzada true");
+        const usuariosJSON = JSON.stringify(rows);
+        return usuariosJSON;
+    } catch (error) {
+        console.error('Error al obtener usuarios:', error.message);
+        throw error;
+    }
+}//cambia la conta a autoritzada
+async function eliminarUsuari(id, connection){
+    try {
+        const [rows, fields] = await connection.execute('Delete FROM alumnes  WHERE idAlum='+"'"+id+"'");
+        const usuariosJSON = JSON.stringify(rows);
+        return usuariosJSON;
+    } catch (error) {
+        console.error('Error al obtener usuarios:', error.message);
+        throw error;
+    }
+}//elimina el usuari designat
+async function ObtenirInscrits(classe, connection) {
+    try {
+        const [rows, fields] = await connection.execute('SELECT Nom, username, correu FROM alumnes  WHERE classe='+"'"+classe+"'"+" AND autoritzada=false");
+        const usuariosJSON = JSON.stringify(rows);
+        return usuariosJSON;
+    } catch (error) {
+        console.error('Error al obtener usuarios:', error.message);
+        throw error;
+    }
+}//mostrar llista d'alumnes de una classe concreta que no estan validats
