@@ -2,7 +2,8 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
-
+const bodyParser = require("body-parser");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -12,7 +13,34 @@ const io = new Server(server, {
   },
 });
 
+app.use(bodyParser.json());
 app.use(cors());
+
+const uri =
+  "mongodb+srv://a22celgariba:5xaChqdY3ei4ukcp@cluster0.2skn7nc.mongodb.net/?retryWrites=true&w=majority";
+
+const client = new MongoClient(uri, {
+  poolSize: 15,
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+});
+
+async function getQuestions() {
+  try {
+    await client.connect();
+    const db = client.db("G3-Proj2");
+    const collection = db.collection("preguntas");
+    const questions = collection.aggregate([{ $sample: { size: 10 } }]);
+    return questions;
+  } catch (err) {
+    console.error(err);
+  } finally {
+    await client.close();
+  }
+}
 
 let lobbies = [];
 
@@ -64,6 +92,7 @@ io.on("connection", (socket) => {
                 name: data.name,
                 score: 0,
                 status: "connected",
+                ready: false,
               });
               socket.join(data.lobby_code);
               socket.data.current_lobby = data.lobby_code;
@@ -114,7 +143,10 @@ io.on("connection", (socket) => {
           }
         });
         if (readyUsers == lobby.players.length) {
-          io.to(socket.data.lobby_code).emit("start game");
+          io.to(socket.data.lobby_code).emit("start countdown");
+          setTimeout(() => {
+            io.to(socket.data.lobby_code).emit("start game");
+          }, 5000);
         }
       }
     });
@@ -142,6 +174,31 @@ io.on("connection", (socket) => {
       );
       io.to(socket.data.current_lobby).emit("player list", lobby.players);
     }
+  });
+
+  socket.on("player ready", (player) => {
+    let readyUsers = 0;
+
+    lobbies.forEach((lobby) => {
+      if (lobby.lobby_code === socket.data.current_lobby) {
+        lobby.players.forEach((player) => {
+          if (player.name === socket.data.name) {
+            player.ready = true;
+          }
+        });
+        lobby.players.forEach((player) => {
+          if (player.ready) {
+            readyUsers++;
+          }
+        });
+        if (readyUsers === lobby.players.length) {
+          io.to(socket.data.current_lobby).emit("player list", lobby.players);
+          io.to(socket.data.current_lobby).emit("start game");
+        } else {
+          io.to(socket.data.current_lobby).emit("player list", lobby.players);
+        }
+      }
+    });
   });
 });
 

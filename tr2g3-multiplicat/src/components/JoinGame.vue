@@ -8,8 +8,12 @@
         </div>
         <div class="grid">
             <div class="player" v-for="player in store.players" :key="player.name">
-                {{ player.name }}
+                <span :class="{ 'user-name': player.name === username }">{{ player.name }}</span>
+                <button v-if="!player.ready" @click="markReady(player)"
+                    class="ready-button ready-button-not-ready">Ready</button>
+                <button v-else class="ready-button ready-button-ready" disabled>Ready</button>
             </div>
+            <div v-if="showCountdown">{{ countdownSecs }}</div>
         </div>
     </div>
 </template>
@@ -18,6 +22,7 @@
 import { useAppStore } from "../store/app";
 import { socket } from "@/services/socket";
 import { ref } from 'vue';
+import { useRouter } from 'vue-router'
 
 export default {
     name: "JoinGame",
@@ -25,13 +30,29 @@ export default {
         return {
             username: "",
             lobbyCode: "",
+            showCountdown: false,
+            countdownSecs: 0,
         };
     },
     setup() {
         const store = useAppStore();
+        const router = useRouter();
+
+        socket.on("start countdown", () => {
+            this.showCountdown = true;
+            this.countdownSecs = 5;
+
+            const interval = setInterval(function () {
+                this.countdownSecs--;
+                if (this.countdownSecs <= 0) {
+                    this.showCountdown = false;
+                    clearInterval(interval);
+                }
+            }, 5000);
+        })
 
         socket.on("start game", (data) => {
-            this.$router.push("/");
+            router.push("/combat");
         });
 
         socket.on("player list", (players) => {
@@ -56,12 +77,21 @@ export default {
         leaveLobby() {
             socket.emit("leave lobby");
         },
+
+        markReady(player) {
+            player.ready = true;
+            socket.emit("player ready", player);
+        },
     },
     mounted() { },
 };
 </script>
 
 <style scoped>
+.user-name {
+    color: rgb(212, 0, 255);
+}
+
 .container {
     display: flex;
     justify-content: center;
@@ -110,6 +140,35 @@ export default {
     cursor: pointer;
 }
 
+.ready-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.ready-button-not-ready {
+    background-color: #dc3545;
+}
+
+.ready-button-ready {
+    background-color: #28a745;
+}
+
+.ready-indicator {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
 .join-button:hover {
     background-color: #0069d9;
 }
@@ -118,12 +177,20 @@ export default {
     background-color: #c82333;
 }
 
+.ready-button:hover {
+    background-color: #218838;
+}
+
 .join-button:active {
     background-color: #3e8e41;
 }
 
 .leave-button:active {
     background-color: #bd2130;
+}
+
+.ready-button:active {
+    background-color: #1e7e34;
 }
 
 .grid {

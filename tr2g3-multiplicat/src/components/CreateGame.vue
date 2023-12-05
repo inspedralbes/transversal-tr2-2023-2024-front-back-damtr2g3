@@ -10,10 +10,7 @@
                 <label for="max_players">Max Players:</label>
                 <input type="number" id="max_players" v-model="max_players" />
             </div>
-            <button @click="generateRandomInt">Generate</button>
-            <div v-if="randomInt">
-                <button @click="newGameLobby">Open Game Lobby</button>
-            </div>
+            <button @click="newGameLobby">Open Game Lobby</button>
             <div v-if="lobbyCode">
                 <p>Lobby Code: {{ lobbyCode }}</p>
             </div>
@@ -44,6 +41,9 @@ export default {
     },
     methods: {
         newGameLobby() {
+            const randomInt = Math.floor(Math.random() * 90000) + 10000;
+            this.randomInt = randomInt;
+
             if (this.subject && this.max_players && this.randomInt) {
                 const gameData = {
                     lobby_code: this.randomInt,
@@ -54,11 +54,6 @@ export default {
                 this.lobbyCode = this.randomInt;
             }
         },
-
-        generateRandomInt() {
-            const randomInt = Math.floor(Math.random() * 90000) + 10000;
-            this.randomInt = randomInt;
-        }
     }
 };
 </script>
