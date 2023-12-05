@@ -19,6 +19,12 @@
                         <v-btn @click="popUpPasswd=true" class="reset_password_button" style="background-color: red;">
                             Reset Password
                         </v-btn>
+                        <vs-popup class="popUp1"  title="Restablir Contrasenya" :active.sync="popUpPasswd">
+                            <p>
+                                <v-text-field v-model="passw" label="newPasswd"></v-text-field>
+                                <v-btn @click="resetPasswd(passw)" type="submit" color="primary">Actualitzar</v-btn>
+                            </p>
+                        </vs-popup>
                     </v-card-actions>
                 </v-card>
                 
@@ -36,16 +42,14 @@
             return {
                 classe: "",
                 Email: "",
-                novaContrasenya:"",
                 popUpPasswd:false,
                 pfp:""
             };
             
         },
         methods: {
-            resetPasswd(){
-                CambiarContrasenya(this.StoredUsername, this.novaContrasenya)
-                this.novaContrasenya=""
+            resetPasswd(passw){
+                CambiarContrasenya(this.StoredUsername, passw)
             },
             obtenirInfo(){
                 console.log(this.connexioPinia, " ",this.StoredUsername )

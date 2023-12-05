@@ -75,9 +75,9 @@ app.post("/loginProf", function (req, res) {
         res.json(autoritzacio)
     })
 })//crida al login, return bool sutoritzacio
-app.post("/infoUser",  async function(req, res){
+app.post("/infoUser", function(req, res){
     usuari=usuari=req.body.user
-    info=await  bbdd.ObtenirInfoUsuari(usuari, connection) 
+    info=bbdd.ObtenirInfoUsuari(usuari, connection) 
     console.log(info)
     info=JSON.parse(info)
     console.log(info)
@@ -88,5 +88,8 @@ app.post("/restablirPasswd", function(req, res){
     novaContrasenya=req.body.passwd
     bbdd.restablirContrasenya(usuariActualitzat, novaContrasenya, connection)
 })//cambiar la contrasenya existent per una de nova
-
-
+app.post("/alumnesClasse", function (req, res) {
+    alumnes=bbdd.dadesAlumnesClasse(req.body.classe, connection)
+    alumnes=JSON.parse(alumnes)
+    res.json(alumnes)
+})//passar informacio basica de tots els alumnes d'una classe

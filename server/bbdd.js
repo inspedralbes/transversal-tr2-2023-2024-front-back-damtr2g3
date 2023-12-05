@@ -12,7 +12,7 @@ const dbName = "G3-Proj2";
 
 //contrasenya:adminADMIN1 bbdd:a22celgariba_Proj2-G3 user:a22celgariba_admin--------dades MySql
 
-module.exports={obtenirPreguntes, login, ObtenirInfoUsuari, CambiarContrasena, loginProf}
+module.exports={obtenirPreguntes, login, ObtenirInfoUsuari, CambiarContrasena, loginProf, dadesAlumnesClasse}
 
 async function obtenirPreguntes(numPreguntes){
     await client.connect();
@@ -78,3 +78,14 @@ async function CambiarContrasena(usuari, passw, connection){
         throw error;
     }
 }//cambia la contrasenya del usuari per una nova
+
+async function dadesAlumnesClasse(classe, connection){
+    try {
+        const [rows, fields] = await connection.execute('SELECT Nom, username, fotoPerfil, correu FROM alumnes  WHERE classe='+"'"+classe+"'");
+        const usuariosJSON = JSON.stringify(rows);
+        return usuariosJSON;
+    } catch (error) {
+        console.error('Error al obtener usuarios:', error.message);
+        throw error;
+    }
+}
