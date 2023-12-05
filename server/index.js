@@ -14,13 +14,46 @@ const io = new Server(server, {
 
 app.use(cors());
 
-let lobbies = [];
+let lobbies = [
+  {
+    lobby_code: "12177",
+    subject: 'Nombres i operacions',
+    date: 1701768082703,
+    players: [
+      {
+        name: "Player1",
+        score: 42,
+        status: "active"
+    },
+    {
+        name: "Player2",
+        score: 85,
+        status: "inactive"
+    },
+    {
+        name: "Player3",
+        score: 73,
+        status: "active"
+    }
+    ],
+    maxPlayers: 5
+  },
+];
 
 io.on("connection", (socket) => {
   console.log("A user connected");
 
   socket.on("get lobbies", () => {
     sendLobbyList();
+  });
+
+  socket.on("get players", (data) => {
+    let jugadors = sendPlayerListByLobbyCode(data);
+    if(jugadors!=null){
+      io.to(socket.id).emit("players list", jugadors);
+    } else {
+      io.to(socket.id).emit("players error");
+    }
   });
 
   socket.on("newLobby", (data) => {
@@ -124,6 +157,15 @@ io.on("connection", (socket) => {
     console.log("A user disconnected");
   });
 });
+
+function sendPlayerListByLobbyCode(lobby_code) {
+  let lobby = lobbies.find((lobby) => lobby.lobby_code == lobby_code);
+  if (lobby) {
+    return lobby.players;
+  }
+  return null;
+}
+
 
 function sendLobbyList() {
   io.emit("lobbies list", lobbies);
