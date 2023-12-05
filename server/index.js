@@ -15,6 +15,7 @@ const io = new Server(server, {
 app.use(cors());
 
 let lobbies = [
+  //Lobby d'exemple per fer proves
   {
     lobby_code: "12177",
     subject: 'Nombres i operacions',
@@ -39,6 +40,14 @@ let lobbies = [
     maxPlayers: 5
   },
 ];
+
+app.get("/incrementScore", (req, res) => {
+  const { lobbyId, playerName, incrementAmount } = req.query;
+
+  io.emit("increment score", { lobbyId, playerName, incrementAmount });
+  res.send("Score incremented");
+});
+
 
 io.on("connection", (socket) => {
   console.log("A user connected");
