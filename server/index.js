@@ -120,6 +120,18 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on("leave lobby", () => {
+    let lobby = lobbies.find(
+      (lobby) => lobby.lobby_code == socket.data.current_lobby
+    );
+    if (lobby) {
+      lobby.players = lobby.players.filter(
+        (player) => player.name != socket.data.name
+      );
+      io.to(socket.data.current_lobby).emit("player list", lobby.players);
+    }
+  });
+
   socket.on("disconnect", () => {
     let lobby = lobbies.find(
       (lobby) => lobby.lobby_code == socket.data.current_lobby

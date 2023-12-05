@@ -4,6 +4,7 @@
             <input type="text" v-model="username" class="username-input" placeholder="Enter your username" />
             <input type="number" v-model="lobbyCode" class="lobby-input" placeholder="Enter the lobby code" />
             <button @click="joinGame" class="join-button">Join</button>
+            <button @click="leaveLobby" class="leave-button">Leave</button>
         </div>
         <div class="grid">
             <div class="player" v-for="player in store.players" :key="player.name">
@@ -52,6 +53,9 @@ export default {
                 socket.emit("join lobby", data);
             }
         },
+        leaveLobby() {
+            socket.emit("leave lobby");
+        },
     },
     mounted() { },
 };
@@ -86,8 +90,19 @@ export default {
 }
 
 .join-button {
+    margin-right: 10px;
     padding: 10px 20px;
     background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.leave-button {
+    padding: 10px 20px;
+    background-color: #dc3545;
     color: white;
     border: none;
     border-radius: 4px;
@@ -99,8 +114,16 @@ export default {
     background-color: #0069d9;
 }
 
+.leave-button:hover {
+    background-color: #c82333;
+}
+
 .join-button:active {
     background-color: #3e8e41;
+}
+
+.leave-button:active {
+    background-color: #bd2130;
 }
 
 .grid {
