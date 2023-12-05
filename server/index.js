@@ -6,18 +6,9 @@ const bbdd=require('./bbdd.js');
 const mysql=require('mysql2/promise')
 var nodemailer = require('nodemailer');
 
-app.use(cors(
-    {
-        "origin": "*",
-        "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-        "preflightContinue": false,
-        "optionsSuccessStatus": 204
-      }
-))
+app.use(cors())
 app.use(express.json());
-app.listen(PORT, () => {
-    console.log('Server running');
-});
+app.listen(PORT, () => {console.log('Server running');});
 const connection = mysql.createPool({
     host: "dam.inspedralbes.cat",
     user: "a22celgariba_admin",
@@ -30,7 +21,7 @@ var transporter = nodemailer.createTransport({
       user: 'matesmonoficial@gmail.com',
       pass: 'N1ntendo_'
     }
-  });
+});
 
 app.get("/preguntas",  function (req, res) {
     numPreguntes=req.body.num

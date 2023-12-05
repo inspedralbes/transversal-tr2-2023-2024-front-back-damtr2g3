@@ -57,3 +57,25 @@ export async function CambiarContrasenya(user, novaPasswd){
     );
 }//envia la nova contrasenya per actualitzar el registre
 
+export async function nouUsuari(nom,user, contrasenya, foto, email, classe){
+
+    const alumne ={
+        username:user,
+        nom:nom,
+        contrasenya:contrasenya,
+        fotoPerfil:foto,
+        correu:email,
+        classe:classe
+    }
+    
+    const response = await fetch(`http://localhost:3001/registrarUsuari`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(alumne),
+            mode: "cors"
+        }
+    );
+}
