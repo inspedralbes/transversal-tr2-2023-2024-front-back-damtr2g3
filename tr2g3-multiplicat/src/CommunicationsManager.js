@@ -78,11 +78,11 @@ export async function nouUsuari(nom,user, contrasenya, foto, email, classe){
             mode: "cors"
         }
     );
-}
+}//envia un objecte alumne a node per inserir-lo en la bbdd
 
 export async function revisarClasses(){
     const response = await fetch('http://localhost:3001/obtenirClassesRegistre');
     const classes = await response.json();
     return classes
       
-}
+}//recupera un llistat de totes les classes

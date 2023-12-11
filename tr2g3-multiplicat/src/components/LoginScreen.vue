@@ -15,21 +15,25 @@
               </v-form>
               <v-btn @click="validateLoginBtn(username, password)" type="submit" color="primary">Login</v-btn>
               <v-btn @click=prepararRegistre() type="submit" color="primary">Registrat</v-btn>
-              <vs-popup class="popUpRegistre"  title="Crear un nou usuari" :active.sync="popUpRegistre">
-                <p>
+              <v-card v-show="popUpRegistre" style="background-color: rgba(255, 255, 255, 0.5) !important; border-color: white !important;">
                   Nom:<v-text-field v-model="nom" label="nom"></v-text-field>
                   Username:<v-text-field v-model="user" label="user"></v-text-field>
                   Contrasenya:<v-text-field v-model="contrasenya" label="contrasenya"></v-text-field>
                   link Foto de perfil:<v-text-field v-model="foto" label="foto"></v-text-field>
                   Correu:<v-text-field v-model="email" label="email"></v-text-field>
-                  Classe:<v-combobox label="Combobox" :items=classes[any].idClasse></v-combobox>
+                  Classe:<v-select
+                    :items="classes"
+                    name="classes"
+                    label="Selecciona una classe"
+                    v-model="classe"
+                    v-validate="'required'"
+                    item-title="idClasse">
+                  </v-select>
                   <v-btn @click="crearUser(nom,user, contrasenya, foto, email, classe)" type="submit" color="primary">Crear l'usuari</v-btn>
-                </p>
-              </vs-popup>
-            </v-card-text>
           </v-card>
-          
-        </v-col>
+          </v-card-text>
+        </v-card>
+      </v-col>
       </v-row>
     </v-container>
   </template>
@@ -40,19 +44,20 @@
     import { nouUsuari } from '@/CommunicationsManager';
     import { useAppStore } from '../store/app';
     import {revisarClasses} from '@/CommunicationsManager';
+    import { Modal } from 'usemodal-vue3';
     export default {
       data() {
         return {
-          username: '',
-          password: '',
-          popUpRegistre:false,
-          nom:"",
-          user:"",
-          contrasenya:"",
-          foto:"",
-          email:"",
-          classe:"",
-          classes:[]
+            username: '',
+            password: '',
+            popUpRegistre:false,
+            nom:"",
+            user:"",
+            contrasenya:"",
+            foto:"",
+            email:"",
+            classe:"",
+            classes:[],
         };
       },
       methods: {
@@ -61,10 +66,11 @@
           this.store.loginInfo.username=username
         },
         prepararRegistre(){
-          this.popUpRegistre=true
-          console.log(this.classes[0].idClasse)
+          if(this.popUpRegistre)
+            this.popUpRegistre=false
+          else
+            this.popUpRegistre=true
         },
-
         async validateLoginBtn(username, password){
           console.log("hola")
           var autoritzacio = await validateLogin(username, password);
@@ -80,8 +86,7 @@
         crearUser(nom,user, contrasenya, foto, email, classe){
           nouUsuari(nom,user, contrasenya, foto, email, classe)
           this.popUpRegistre=false
-        }
-        
+        },
       },
       setup() {
             const store = useAppStore();
@@ -89,13 +94,13 @@
             return{
               store
             }
-        },
-        created(){
+      },
+      created(){
          revisarClasses().then(response=>{
-          this.classes=response
+            this.classes=response
          })
           
-        }
+      }
     };
     </script>
     
