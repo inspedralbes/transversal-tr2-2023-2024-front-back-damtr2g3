@@ -162,6 +162,11 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on("end game", (data) => {
+    lobbies.splice(lobbies.findIndex(lobby => lobby.lobby_code == data.lobby_code), 1 );
+    console.log(lobbies);
+  });
+
   socket.on("disconnect", () => {
     console.log("A user disconnected");
   });
