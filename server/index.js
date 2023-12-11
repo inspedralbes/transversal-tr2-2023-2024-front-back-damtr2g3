@@ -105,12 +105,15 @@ io.on("connection", (socket) => {
               }
             });
             if (available) {
-              lobby.players.push({
+              let player = {
+                lobby_code: data.lobby_code,
                 name: data.name,
                 score: 0,
                 status: "connected",
-              });
+              }
+              lobby.players.push(player);
               socket.join(data.lobby_code);
+              io.emit("player join", player);
             } else {
               connectionError = true;
               io.to(socket.id).emit("connection error", {
@@ -136,8 +139,6 @@ io.on("connection", (socket) => {
         errorMsg: "No lobbies found",
       });
     }
-
-    console.log(lobbies);
   });
 
   socket.on("ready user", () => {
