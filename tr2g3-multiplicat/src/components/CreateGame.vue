@@ -3,8 +3,21 @@
         <div class="form">
             <h2>Create Game Lobby</h2>
             <div class="form-group">
-                <label for="subject">Subject:</label>
-                <input type="text" id="subject" v-model="subject" />
+                <label>Subject:</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" v-model="subject" value="Math" />
+                        Math
+                    </label>
+                    <label>
+                        <input type="radio" v-model="subject" value="Science" />
+                        Science
+                    </label>
+                    <label>
+                        <input type="radio" v-model="subject" value="History" />
+                        History
+                    </label>
+                </div>
             </div>
             <div class="form-group">
                 <label for="max_players">Max Players:</label>
@@ -84,6 +97,15 @@ export default {
 label {
     display: block;
     margin-bottom: 5px;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+}
+
+input[type="radio"] {
+    margin-right: 5px;
 }
 
 input {

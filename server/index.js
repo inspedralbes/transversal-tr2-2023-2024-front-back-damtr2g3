@@ -20,26 +20,29 @@ const uri =
   "mongodb+srv://a22celgariba:5xaChqdY3ei4ukcp@cluster0.2skn7nc.mongodb.net/?retryWrites=true&w=majority";
 
 const client = new MongoClient(uri, {
-  poolSize: 15,
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
+    poolSize: 15,
   },
 });
 
-async function getQuestions() {
-  try {
-    await client.connect();
-    const db = client.db("G3-Proj2");
-    const collection = db.collection("preguntas");
-    const questions = collection.aggregate([{ $sample: { size: 10 } }]);
-    return questions;
-  } catch (err) {
-    console.error(err);
-  } finally {
-    await client.close();
-  }
+function getQuestions() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await client.connect();
+      const db = client.db("G3-Proj2");
+      const collection = db.collection("preguntas");
+      const questions = collection
+        .aggregate([{ $sample: { size: 10 } }])
+        .toArray();
+      resolve(questions);
+    } catch (err) {
+      console.error(err);
+      reject(err);
+    }
+  });
 }
 
 let lobbies = [];
@@ -51,8 +54,10 @@ io.on("connection", (socket) => {
     sendLobbyList();
   });
 
-  socket.on("newLobby", (data) => {
+  socket.on("newLobby", async (data) => {
     let lobby_exists = false;
+    let randomQuestions = await getQuestions();
+    console.log(randomQuestions);
 
     lobbies.forEach((element) => {
       if (element.lobby_code == data.lobby_code) {
@@ -64,13 +69,14 @@ io.on("connection", (socket) => {
       lobbies.push({
         lobby_code: data.lobby_code,
         subject: data.subject,
+        questions: { randomQuestions },
         date: new Date().getTime(),
         players: [],
         maxPlayers: data.max_players,
       });
     }
 
-    // console.log(lobbies);
+    console.log(lobbies);
     sendLobbyList();
   });
 
