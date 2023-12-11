@@ -12,23 +12,23 @@
               <v-form >
                 <v-text-field v-model="username" label="Username"></v-text-field>
                 <v-text-field v-model="password" label="Password" type="password"></v-text-field>
-                
               </v-form>
               <v-btn @click="validateLoginBtn(username, password)" type="submit" color="primary">Login</v-btn>
-              <v-btn @click="popUpRegistre=true" type="submit" color="primary">Registrat</v-btn>
-              <vs-popup class="popUpRegistre"  title="Crear un nou usuari" :active.sync="popUpPasswd">
+              <v-btn @click=prepararRegistre() type="submit" color="primary">Registrat</v-btn>
+              <vs-popup class="popUpRegistre"  title="Crear un nou usuari" :active.sync="popUpRegistre">
                 <p>
                   Nom:<v-text-field v-model="nom" label="nom"></v-text-field>
                   Username:<v-text-field v-model="user" label="user"></v-text-field>
                   Contrasenya:<v-text-field v-model="contrasenya" label="contrasenya"></v-text-field>
                   link Foto de perfil:<v-text-field v-model="foto" label="foto"></v-text-field>
                   Correu:<v-text-field v-model="email" label="email"></v-text-field>
-                  Classe:<v-text-field v-model="classe" label="classe"></v-text-field>
+                  Classe:<v-combobox label="Combobox" :items=classes[any].idClasse></v-combobox>
                   <v-btn @click="crearUser(nom,user, contrasenya, foto, email, classe)" type="submit" color="primary">Crear l'usuari</v-btn>
                 </p>
               </vs-popup>
             </v-card-text>
           </v-card>
+          
         </v-col>
       </v-row>
     </v-container>
@@ -39,6 +39,7 @@
     import { validateLogin } from '@/CommunicationsManager';
     import { nouUsuari } from '@/CommunicationsManager';
     import { useAppStore } from '../store/app';
+    import {revisarClasses} from '@/CommunicationsManager';
     export default {
       data() {
         return {
@@ -50,7 +51,8 @@
           contrasenya:"",
           foto:"",
           email:"",
-          classe:""
+          classe:"",
+          classes:[]
         };
       },
       methods: {
@@ -58,6 +60,11 @@
           this.store.loginInfo.loggedIn=true
           this.store.loginInfo.username=username
         },
+        prepararRegistre(){
+          this.popUpRegistre=true
+          console.log(this.classes[0].idClasse)
+        },
+
         async validateLoginBtn(username, password){
           console.log("hola")
           var autoritzacio = await validateLogin(username, password);
@@ -82,6 +89,12 @@
             return{
               store
             }
+        },
+        created(){
+         revisarClasses().then(response=>{
+          this.classes=response
+         })
+          
         }
     };
     </script>

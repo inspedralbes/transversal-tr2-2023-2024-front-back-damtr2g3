@@ -79,3 +79,10 @@ export async function nouUsuari(nom,user, contrasenya, foto, email, classe){
         }
     );
 }
+
+export async function revisarClasses(){
+    const response = await fetch('http://localhost:3001/obtenirClassesRegistre');
+    const classes = await response.json();
+    return classes
+      
+}

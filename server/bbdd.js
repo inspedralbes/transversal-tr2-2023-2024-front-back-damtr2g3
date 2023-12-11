@@ -11,8 +11,9 @@ const dbName = "G3-Proj2";
 //connexio mongo
 
 //contrasenya:adminADMIN1 bbdd:a22celgariba_Proj2-G3 user:a22celgariba_admin--------dades MySql
-
-module.exports={obtenirPreguntes, login, ObtenirInfoUsuari, CambiarContrasena, loginProf, dadesAlumnesClasse, classesProf, crearAlumne, validarUsuari, eliminarUsuari, ObtenirInscrits}
+//	idPartida	idClasse	idAlumne	idProfesor	capacitat	puntuacio	tema
+module.exports={obtenirPreguntes, login, ObtenirInfoUsuari, CambiarContrasena, loginProf, dadesAlumnesClasse, classesProf,
+     crearAlumne, validarUsuari, eliminarUsuari, ObtenirInscrits, revisarClasses}
 
 async function obtenirPreguntes(numPreguntes){
     await client.connect();
@@ -138,3 +139,13 @@ async function ObtenirInscrits(classe, connection) {
         throw error;
     }
 }//mostrar llista d'alumnes de una classe concreta que no estan validats
+async function revisarClasses(connection){
+    try {
+        const [rows, fields] = await connection.execute('SELECT idClasse FROM classe');
+        const usuariosJSON = JSON.stringify(rows);
+        return usuariosJSON;
+    } catch (error) {
+        console.error('Error al obtener usuarios:', error.message);
+        throw error;
+    }
+}//comproba totes les classes existents per poder fer la seleccio al registrarse

@@ -58,7 +58,7 @@ app.post("/login", function (req, res) {
         })
 })//crida al login, return bool sutoritzacio
 app.post("/loginProf", function (req, res) {
-    usuari=req.body.user
+    usuari=req.body.correu
     passwd=req.body.passwd
     let usuariTrobat = false;
     let id={
@@ -142,3 +142,9 @@ app.post("/alumnesPerAutoritzar", function (req, res){
     alumnes=JSON.parse(alumnes)
     res.json(alumnes)
 })//retorna una llista de tots els alumnes que es volen inscriure a una classe determinada
+app.get("/obtenirClassesRegistre", async function (req, res){
+    classes=await bbdd.revisarClasses(connection)
+    console.log(classes)
+    classes=JSON.parse(classes)
+    res.json(classes) 
+})//envia un llistat de totes les classes per facilitar el registre d'un nou alumne
