@@ -51,6 +51,11 @@ export default {
             }, 5000);
         })
 
+        socket.on("questions received", (questions) => {
+            store.questions = questions.randomQuestions;
+            console.log(store.questions);
+        });
+
         socket.on("start game", (data) => {
             router.push("/combat");
         });
@@ -74,6 +79,7 @@ export default {
                 socket.emit("join lobby", data);
             }
         },
+
         leaveLobby() {
             socket.emit("leave lobby");
         },

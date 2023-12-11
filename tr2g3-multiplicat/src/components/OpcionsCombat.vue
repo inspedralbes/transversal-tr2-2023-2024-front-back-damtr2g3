@@ -26,7 +26,7 @@
 
 <script>
 import { useAppStore } from '../store/app';
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
 import Calculadora from './Calculadora.vue';
 
 export default {
@@ -35,9 +35,13 @@ export default {
   },
   setup() {
     const store = useAppStore();
-    var preguntesActuals = store.preguntes.preguntes;
-    var selectedAnswer = ref({});
-    var answerSelected = ref(false);
+    const preguntesActuals = ref([]);
+    const selectedAnswer = ref({});
+    const answerSelected = ref(false);
+
+    watchEffect(() => {
+      preguntesActuals.value = store.questions;
+    });
 
     function selectAnswer(respuesta) {
       selectedAnswer.value = respuesta;
@@ -56,12 +60,12 @@ export default {
           return 'green';
         }
       }
-      return 'primary';
+      return {};
     }
 
     function nextQuestion() {
       if (selectedAnswer.value) {
-        preguntesActuals.shift();
+        preguntesActuals.value.shift();
         selectedAnswer.value = {};
         answerSelected.value = false;
       }

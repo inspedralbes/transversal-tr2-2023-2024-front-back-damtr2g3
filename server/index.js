@@ -57,7 +57,6 @@ io.on("connection", (socket) => {
   socket.on("newLobby", async (data) => {
     let lobby_exists = false;
     let randomQuestions = await getQuestions();
-    console.log(randomQuestions);
 
     lobbies.forEach((element) => {
       if (element.lobby_code == data.lobby_code) {
@@ -76,7 +75,7 @@ io.on("connection", (socket) => {
       });
     }
 
-    console.log(lobbies);
+    // console.log(lobbies);
     sendLobbyList();
   });
 
@@ -104,6 +103,7 @@ io.on("connection", (socket) => {
               socket.data.current_lobby = data.lobby_code;
               socket.data.name = data.name;
               sendPlayerList(socket);
+              sendQuestions(socket);
             } else {
               connectionError = true;
               io.to(socket.id).emit("connection error", {
@@ -214,6 +214,18 @@ function sendPlayerList(socket) {
   );
   if (currentLobby) {
     io.to(socket.data.current_lobby).emit("player list", currentLobby.players);
+  }
+}
+
+function sendQuestions(socket) {
+  let currentLobby = lobbies.find(
+    (lobby) => lobby.lobby_code == socket.data.current_lobby
+  );
+  if (currentLobby) {
+    io.to(socket.data.current_lobby).emit(
+      "questions received",
+      currentLobby.questions
+    );
   }
 }
 
