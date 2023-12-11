@@ -148,3 +148,19 @@ app.get("/obtenirClassesRegistre", async function (req, res){
     classes=JSON.parse(classes)
     res.json(classes) 
 })//envia un llistat de totes les classes per facilitar el registre d'un nou alumne
+app.post("/obtenirDadesAlumneVue", function (req, res){
+    alumne=req.body.username
+    dades=bbdd.recollirStatsAlumne(alumne)
+    res.json(dades)
+})//envia estadistiques a vue per generar grafics
+app.post("/obtenirDadesAlumneAndroid", function(req, res){
+    alumne=req.body.username
+    dades=bbdd.recollirStatsAlumne(alumne)
+    //crida a python
+})//envia estadistiques a un script per poder passar grafics del alumne a android
+app.post("/obtenirDadesClasse", function(req, res){
+    classe=req.body.classe
+    info=bbdd.recollirStatsClasse(classe)
+    //crida a python
+    
+})//envia estadistiques a un script per poder passar grafics de la classe

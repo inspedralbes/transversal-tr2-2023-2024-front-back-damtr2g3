@@ -44,7 +44,6 @@
     import { nouUsuari } from '@/CommunicationsManager';
     import { useAppStore } from '../store/app';
     import {revisarClasses} from '@/CommunicationsManager';
-    import { Modal } from 'usemodal-vue3';
     export default {
       data() {
         return {

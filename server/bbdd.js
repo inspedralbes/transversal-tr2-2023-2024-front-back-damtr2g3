@@ -13,7 +13,7 @@ const dbName = "G3-Proj2";
 //contrasenya:adminADMIN1 bbdd:a22celgariba_Proj2-G3 user:a22celgariba_admin--------dades MySql
 //	idPartida	idClasse	idAlumne	idProfesor	capacitat	puntuacio	tema
 module.exports={obtenirPreguntes, login, ObtenirInfoUsuari, CambiarContrasena, loginProf, dadesAlumnesClasse, classesProf,
-     crearAlumne, validarUsuari, eliminarUsuari, ObtenirInscrits, revisarClasses}
+     crearAlumne, validarUsuari, eliminarUsuari, ObtenirInscrits, revisarClasses, preguntaContestada, recollirStatsAlumne, recollirStatsClasse}
 
 async function obtenirPreguntes(numPreguntes){
     await client.connect();
@@ -149,3 +149,16 @@ async function revisarClasses(connection){
         throw error;
     }
 }//comproba totes les classes existents per poder fer la seleccio al registrarse
+async function preguntaContestada(pregunta, alumne){}//insereix a mongo el resultat de la pregunta be/malament i tema
+async function recollirStatsAlumne(alumne){
+    await client.connect();
+    const db = client.db(dbName);
+    const col = db.collection("Estadistiques");
+    dades=col.find({$elemMatch:{id:alumne}}) 
+}//obte les estadistiques d'un alumne en concret
+async function recollirStatsClasse(classe){
+    await client.connect();
+    const db = client.db(dbName);
+    const col = db.collection("Estadistiques");
+    dades=col.find({$elemMatch:{idClasse:classe}}) 
+}//obte les estadistiques d'una classe en concret
