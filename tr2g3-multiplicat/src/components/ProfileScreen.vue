@@ -19,12 +19,10 @@
                         <v-btn @click="popUpPasswd=true" class="reset_password_button" style="background-color: red;">
                             Reset Password
                         </v-btn>
-                        <vs-popup class="popUp1"  title="Restablir Contrasenya" :active.sync="popUpPasswd">
-                            <p>
+                        <v-card v-show="popUpPasswd" style="background-color: rgba(255, 255, 255, 0.5)">
                                 <v-text-field v-model="passw" label="newPasswd"></v-text-field>
                                 <v-btn @click="resetPasswd(passw)" type="submit" color="primary">Actualitzar</v-btn>
-                            </p>
-                        </vs-popup>
+                    </v-card>
                     </v-card-actions>
                 </v-card>
                 
