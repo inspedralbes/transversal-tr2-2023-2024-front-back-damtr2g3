@@ -51,6 +51,7 @@ app.get("/incrementScore", (req, res) => {
 
 io.on("connection", (socket) => {
   console.log("A user connected");
+  sendLobbyList();
 
   socket.on("get lobbies", () => {
     sendLobbyList();
