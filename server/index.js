@@ -139,6 +139,7 @@ io.on("connection", (socket) => {
         errorMsg: "No lobbies found",
       });
     }
+    console.log(lobbies);
   });
 
   socket.on("ready user", () => {
@@ -166,6 +167,7 @@ io.on("connection", (socket) => {
   socket.on("end game", (data) => {
     lobbies.splice(lobbies.findIndex(lobby => lobby.lobby_code == data.lobby_code), 1 );
     console.log(lobbies);
+    sendLobbyList();
   });
 
   socket.on("disconnect", () => {
