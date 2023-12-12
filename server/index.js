@@ -13,20 +13,12 @@ const io = new Server(server, {
   },
 });
 
+const { connectToDb, insertLobby, getLobbies, lobbyExists } = require("./partides_mongo.js");
+
+connectToDb();
+
 app.use(bodyParser.json());
 app.use(cors());
-
-const uri =
-  "mongodb+srv://a22celgariba:5xaChqdY3ei4ukcp@cluster0.2skn7nc.mongodb.net/?retryWrites=true&w=majority";
-
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-    poolSize: 15,
-  },
-});
 
 function getQuestions() {
   return new Promise(async (resolve, reject) => {
@@ -98,27 +90,17 @@ io.on("connection", (socket) => {
   });
 
   socket.on("newLobby", (data) => {
-    let lobby_exists = false;
-    let randomQuestions = await getQuestions();
-
-    lobbies.forEach((element) => {
-      if (element.lobby_code == data.lobby_code) {
-        lobby_exists = true;
-      }
-    });
+    let lobby_exists = lobbyExists(data.lobby_code);
 
     if (!lobby_exists) {
-      lobbies.push({
+      let lobby = {
         lobby_code: data.lobby_code,
         subject: data.subject,
-        questions: { randomQuestions },
         date: new Date().getTime(),
         players: [],
         maxPlayers: data.max_players,
-      });
-
-      console.log(lobbies);
-      console.log("--------------------")
+      };
+      insertLobby(lobby);
       sendLobbyList();
     } else {
       io.to(socket.id).emit("Lobby exists", data);
@@ -293,7 +275,10 @@ function sendQuestions(socket) {
 }
 
 function sendLobbyList() {
-  io.emit("lobbies list", lobbies);
+  getLobbies().then((lobbies) => {
+    io.emit("lobbies list", JSON.stringify(lobbies));
+    console.log(lobbies);
+  });
 }
 
 const PORT = process.env.PORT || 3333;
