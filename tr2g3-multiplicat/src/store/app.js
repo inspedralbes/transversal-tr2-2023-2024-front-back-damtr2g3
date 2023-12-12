@@ -1,10 +1,7 @@
 import { defineStore } from "pinia";
-import preguntes from "./preguntes.json"; // Asumeix que el fitxer JSON es diu 'preguntes.json' i està en el mateix directori
 
 export const useAppStore = defineStore("app", {
   state: () => ({
-    preguntes: preguntes,
-
     //Jugador
     user: {
       imatge:
