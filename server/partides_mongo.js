@@ -166,4 +166,67 @@ async function deleteLobby(lobby_code) {
   });
 }
 
-module.exports = { connectToDb, insertLobby, getLobbies, lobbyExists, addPlayerToLobby, isPlayerNameAvailable, isLobbyFull, isThereAnyLobby, deleteLobby, findLobby };
+async function playerReady(current_lobby_code, current_player_name) {
+  return new Promise((resolve, reject) => {
+    lobbies.updateOne(
+      { lobby_code: current_lobby_code, "players.name": current_player_name },
+      { $set: { "players.$.ready": true } }
+    )
+      .then(result => {
+        resolve();
+      })
+      .catch(err => {
+        console.error(err);
+        reject(err);
+      });
+  });
+}
+
+async function checkAllReady(current_lobby_code) {
+  return new Promise((resolve, reject) => {
+    lobbies.findOne({ lobby_code: current_lobby_code })
+      .then(result => {
+        if (result.players.every((player) => player.ready)) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        reject(err);
+      });
+  });
+}
+
+async function leaveLobby(current_lobby_code, current_player_name) {
+  return new Promise((resolve, reject) => {
+    lobbies.updateOne(
+      { lobby_code: current_lobby_code },
+      { $pull: { players: { name: current_player_name } } }
+    )
+      .then(result => {
+        resolve();
+      })
+      .catch(err => {
+        console.error(err);
+        reject(err);
+      });
+  });
+}
+
+async function getPlayersByLobbyCode(lobby_code) {
+  return new Promise((resolve, reject) => {
+    lobbies.findOne({ lobby_code: lobby_code })
+      .then(result => {
+        resolve(result.players);
+      })
+      .catch(err => {
+        console.error(err);
+        reject(err);
+      });
+  });
+}
+
+module.exports = { client, connectToDb, insertLobby, getLobbies, lobbyExists, addPlayerToLobby, isPlayerNameAvailable, isLobbyFull, isThereAnyLobby, deleteLobby, 
+  findLobby, playerReady, checkAllReady, leaveLobby, getPlayersByLobbyCode };
