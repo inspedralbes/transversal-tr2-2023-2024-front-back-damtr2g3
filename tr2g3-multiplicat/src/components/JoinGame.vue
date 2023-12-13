@@ -74,7 +74,7 @@ export default {
             if (this.username && this.lobbyCode) {
                 const data = {
                     name: this.username,
-                    lobby_code: this.lobbyCode
+                    lobby_code: this.lobbyCode.toString(),
                 };
                 socket.emit("join lobby", data);
             }
