@@ -86,3 +86,21 @@ export async function revisarClasses(){
     return classes
       
 }//recupera un llistat de totes les classes
+
+export async function obtenirStats(username){
+    const dades ={
+        username: username,
+    }
+    
+    const response = await fetch(`http://localhost:3001/obtenirDadesAlumneVue`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dades),
+            mode: "cors"
+        })
+    const stats = await response.json();
+    return stats;
+}//envia l'usuari i recupera un json de les estadistiques

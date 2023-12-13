@@ -68,7 +68,7 @@ app.post("/loginProf", function (req, res) {
     usuaris = bbdd.loginProf(connection).then((usuaris) => {
         usuaris = JSON.parse(usuaris)
         for (var i = 0; i < usuaris.length && usuariTrobat == false; i++) {
-            if (usuaris[i].username == usuari) {
+            if (usuaris[i].correu == usuari) {
                 if (usuaris[i].contrasenya == passwd) {
                     usuariTrobat = true;
                     id.idProf=usuaris[i].idProf
