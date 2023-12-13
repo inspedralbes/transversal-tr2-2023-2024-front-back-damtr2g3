@@ -153,14 +153,28 @@ app.post("/obtenirDadesAlumneVue", function (req, res){
     dades=bbdd.recollirStatsAlumne(alumne)
     res.json(dades)
 })//envia estadistiques a vue per generar grafics
-app.post("/obtenirDadesAlumneAndroid", function(req, res){
+app.post("/generarDadesAlumneAndroid", function(req, res){ 
     alumne=req.body.username
     dades=bbdd.recollirStatsAlumne(alumne)
+    spawn('python3', ["./statsAlumne", dades])
+    
     //crida a python
 })//envia estadistiques a un script per poder passar grafics del alumne a android
-app.post("/obtenirDadesClasse", function(req, res){
+app.post("/generarDadesClasse", function(req, res){ //malament refer tot, utilitzar static path
     classe=req.body.classe
     info=bbdd.recollirStatsClasse(classe)
+    const infoParsejada = {
+        idClasse:info.idClasse
+    };
+    info.forEach((estudiant) => {
+        estudiant.Stats.forEach((estadistica) => {
+            if (!infoParsejada[estadistica.tema]) {
+                infoParsejada[estadistica.tema] = { Acerts: 0, Errors: 0 };
+            }
+            infoParsejada[estadistica.tema].Acerts += estadistica.Acerts;
+            infoParsejada[estadistica.tema].Errors += estadistica.Errors;
+        });
+    })
+    spawn('python3', ["./statsClasse", info])
     //crida a python
-    
 })//envia estadistiques a un script per poder passar grafics de la classe

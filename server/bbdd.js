@@ -149,16 +149,31 @@ async function revisarClasses(connection){
         throw error;
     }
 }//comproba totes les classes existents per poder fer la seleccio al registrarse
-async function preguntaContestada(pregunta, alumne){}//insereix a mongo el resultat de la pregunta be/malament i tema
+async function preguntaContestada(pregunta,resposta, alumne){
+    await client.connect();
+    const db = client.db(dbName);
+    const col = db.collection("StatsAlumnes");
+    if(resposta){
+        db.collection.update(
+            idAlum=alumne
+        )
+
+    }
+    else{
+
+    }
+}//insereix a mongo el resultat de la pregunta be/malament i tema
 async function recollirStatsAlumne(alumne){
     await client.connect();
     const db = client.db(dbName);
     const col = db.collection("Estadistiques");
-    dades=col.find({$elemMatch:{id:alumne}}) 
+    dades=col.find({$elemMatch:{idAlum:alumne}}) 
+    return dades
 }//obte les estadistiques d'un alumne en concret
 async function recollirStatsClasse(classe){
     await client.connect();
     const db = client.db(dbName);
     const col = db.collection("Estadistiques");
     dades=col.find({$elemMatch:{idClasse:classe}}) 
+    return dades
 }//obte les estadistiques d'una classe en concret
