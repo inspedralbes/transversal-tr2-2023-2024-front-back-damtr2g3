@@ -13,8 +13,8 @@ const io = new Server(server, {
   },
 });
 
-const { client, connectToDb, insertLobby, getLobbies, lobbyExists, addPlayerToLobby, isPlayerNameAvailable, isLobbyFull, isThereAnyLobby, deleteLobby, 
-  findLobby, playerReady, checkAllReady, leaveLobby, getPlayersByLobbyCode, increseScore} = require("./partides_mongo.js");
+const lobbies_mongo = require("./partides_mongo.js");
+const preguntes_mongo = require("./preguntes_mongo.js");
 const { join } = require("path");
 const { connect } = require("http2");
 
@@ -37,15 +37,53 @@ function getQuestions() {
   });
 }
 
+
+//Gestió de preguntes
+preguntes_mongo.connectToPreguntes();
+
+app.get("/getPreguntes", async (req, res) => {
+  preguntes_mongo.getAllPreguntes().then((result) => {
+    res.send(result);
+  });
+});
+
+app.get("/getPregunta/:id", async (req, res) => {
+  preguntes_mongo.getPregunta(req.params.id).then((result) => {
+    res.send(result);
+  });
+});
+
+app.post("/insertPregunta", async (req, res) => {
+  preguntes_mongo.insertPregunta(req.body).then((result) => {
+    res.send(result);
+  });
+});
+
+app.delete("/deletePregunta/:id", async (req, res) => {
+  preguntes_mongo.deletePregunta(req.params.id).then((result) => {
+    res.send(result);
+  });
+});
+
+app.put("/updatePregunta/:id", async (req, res) => {
+  preguntes_mongo.updatePregunta(req.params.id, req.body).then((result) => {
+    res.send(result);
+  });
+});
+
+
+//Gestió de partides amb sockets
+/*
 app.get("/incrementScore", (req, res) => {
   const { lobbyId, playerName, incrementAmount } = req.query;
 
   io.emit("increment score", { lobbyId, playerName, incrementAmount });
-  increseScore(lobbyId, playerName, parseInt(incrementAmount));
+  increaseScore(lobbyId, playerName, parseInt(incrementAmount));
   res.send("Score incremented");
 });
+*/
 
-connectToDb()
+lobbies_mongo.connectToDb()
   .then(() => {
     console.log("Connected to database");
     io.on("connection", (socket) => {
@@ -57,7 +95,7 @@ connectToDb()
       });
     
       socket.on("get players", (data) => {
-        getPlayersByLobbyCode(data).then((result) => {
+        lobbies_mongo.getPlayersByLobbyCode(data).then((result) => {
           let jugadors = result;
           if(jugadors!=null){
             io.to(socket.id).emit("players list", JSON.stringify(jugadors));
@@ -68,7 +106,7 @@ connectToDb()
       });
     
       socket.on("newLobby", (data) => {
-        lobbyExists(data.lobby_code).then((result) => {
+        lobbies_mongo.lobbyExists(data.lobby_code).then((result) => {
           let lobby_exists = result;
           if (!lobby_exists) {
             console.log("New lobby created");
@@ -83,7 +121,7 @@ connectToDb()
                 players: [],
                 maxPlayers: data.max_players,
               };
-              insertLobby(lobby).then((result) => {
+              lobbies_mongo.insertLobby(lobby).then((result) => {
                 sendLobbyList();
               });
             });
@@ -97,7 +135,7 @@ connectToDb()
         let connectionError = false;
         console.log("joining lobby");
 
-        isThereAnyLobby().then((isLobby) => {
+        lobbies_mongo.isThereAnyLobby().then((isLobby) => {
           if (!isLobby) {
             connectionError = true;
             io.to(socket.id).emit("connection error", {
@@ -105,7 +143,7 @@ connectToDb()
             });
             throw new Error("No lobbies found");
           } else {
-            return lobbyExists(data.lobby_code);
+            return lobbies_mongo.lobbyExists(data.lobby_code);
           }
         }).then((doesLobbyExist) => {
           if (!doesLobbyExist) {
@@ -116,8 +154,8 @@ connectToDb()
             throw new Error("Lobby not found");
           } else {
             return Promise.all([
-              isLobbyFull(data.lobby_code),
-              isPlayerNameAvailable(data.lobby_code, data.name)
+              lobbies_mongo.isLobbyFull(data.lobby_code),
+              lobbies_mongo.isPlayerNameAvailable(data.lobby_code, data.name)
             ]);
           }
         }).then(([isFull, isNameAvailable]) => {
@@ -143,7 +181,7 @@ connectToDb()
               status: "connected",
               ready: false,
             }
-            addPlayerToLobby(data.lobby_code, player).then((result) => {
+            lobbies_mongo.addPlayerToLobby(data.lobby_code, player).then((result) => {
               socket.join(data.lobby_code);
               io.emit("player join", player);
               socket.join(data.lobby_code);
@@ -159,8 +197,8 @@ connectToDb()
       });
 
       socket.on("player ready", (player) => {
-        playerReady(player.lobby_code, player.name).then((result) => {
-          checkAllReady(player.lobby_code).then((result) => {
+        lobbies_mongo.playerReady(player.lobby_code, player.name).then((result) => {
+          lobbies_mongo.checkAllReady(player.lobby_code).then((result) => {
             if (result) {
               io.to(socket.data.current_lobby).emit("player list", lobby.players);
               io.to(socket.data.current_lobby).emit("start game");
@@ -177,13 +215,13 @@ connectToDb()
     
     socket.on("end game", (data) => {
       console.log(data);
-      deleteLobby(data).then((result) => {
+      lobbies_mongo.deleteLobby(data).then((result) => {
         sendLobbyList();
       });
     });
 
     socket.on("remove player", (data) => {
-      leaveLobby(data.lobby_code, data.name).then((result) => {
+      lobbies_mongo.leaveLobby(data.lobby_code, data.name).then((result) => {
         sendPlayerList(socket);
         sendLobbyList();
         let info = {
@@ -195,8 +233,8 @@ connectToDb()
     });
       
       socket.on("leave lobby", () => {
-        if(lobbyExists(socket.data.current_lobby)){
-          leaveLobby(socket.data.current_lobby, socket.data.name).then((result) => {
+        if(lobbies_mongo.lobbyExists(socket.data.current_lobby)){
+          lobbies_mongo.leaveLobby(socket.data.current_lobby, socket.data.name).then((result) => {
             socket.leave(socket.data.current_lobby);
             sendPlayerList(socket);
             sendLobbyList();
@@ -210,8 +248,8 @@ connectToDb()
       });
     
       socket.on("disconnect", () => {
-        if(lobbyExists(socket.data.current_lobby)){
-          leaveLobby(socket.data.current_lobby, socket.data.name).then((result) => {
+        if(lobbies_mongo.lobbyExists(socket.data.current_lobby)){
+          lobbies_mongo.leaveLobby(socket.data.current_lobby, socket.data.name).then((result) => {
             socket.leave(socket.data.current_lobby);
             sendPlayerList(socket);
             sendLobbyList();
@@ -230,14 +268,14 @@ connectToDb()
   });
 
 function sendPlayerList(socket) {
-  let currentLobby = findLobby(socket.data.current_lobby);
+  let currentLobby = lobbies_mongo.findLobby(socket.data.current_lobby);
   if (currentLobby) {
     io.to(socket.data.current_lobby).emit("player list", currentLobby.players);
   }
 }
 
 function sendQuestions(socket) {
-  let currentLobby = findLobby(socket.data.current_lobby);
+  let currentLobby = lobbies_mongo.findLobby(socket.data.current_lobby);
   if (currentLobby) {
     io.to(socket.data.current_lobby).emit(
       "questions received",
@@ -247,7 +285,7 @@ function sendQuestions(socket) {
 }
 
 function sendLobbyList() {
-  getLobbies().then((lobbies) => {
+  lobbies_mongo.getLobbies().then((lobbies) => {
     io.emit("lobbies list", JSON.stringify(lobbies));
     //console.log(lobbies);
   });

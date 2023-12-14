@@ -227,7 +227,7 @@ async function getPlayersByLobbyCode(lobby_code) {
   });
 }
 
-async function increseScore(lobby_code, player_name, amount) {
+async function increaseScore(lobby_code, player_name, amount) {
   return new Promise((resolve, reject) => {
     lobbies.updateOne(
       { lobby_code: lobby_code, "players.name": player_name },
@@ -244,4 +244,4 @@ async function increseScore(lobby_code, player_name, amount) {
 }
 
 module.exports = { client, connectToDb, insertLobby, getLobbies, lobbyExists, addPlayerToLobby, isPlayerNameAvailable, isLobbyFull, isThereAnyLobby, deleteLobby, 
-  findLobby, playerReady, checkAllReady, leaveLobby, getPlayersByLobbyCode, increseScore };
+  findLobby, playerReady, checkAllReady, leaveLobby, getPlayersByLobbyCode, increaseScore };
