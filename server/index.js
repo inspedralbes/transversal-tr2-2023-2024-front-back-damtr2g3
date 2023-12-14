@@ -14,7 +14,7 @@ const io = new Server(server, {
 });
 
 const { client, connectToDb, insertLobby, getLobbies, lobbyExists, addPlayerToLobby, isPlayerNameAvailable, isLobbyFull, isThereAnyLobby, deleteLobby, 
-  findLobby, playerReady, checkAllReady, leaveLobby, getPlayersByLobbyCode} = require("./partides_mongo.js");
+  findLobby, playerReady, checkAllReady, leaveLobby, getPlayersByLobbyCode, increseScore} = require("./partides_mongo.js");
 const { join } = require("path");
 const { connect } = require("http2");
 
@@ -41,6 +41,7 @@ app.get("/incrementScore", (req, res) => {
   const { lobbyId, playerName, incrementAmount } = req.query;
 
   io.emit("increment score", { lobbyId, playerName, incrementAmount });
+  increseScore(lobbyId, playerName, parseInt(incrementAmount));
   res.send("Score incremented");
 });
 

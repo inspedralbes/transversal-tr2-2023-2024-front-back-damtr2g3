@@ -11,14 +11,13 @@ const client = new MongoClient(uri, {
   },
 });
 
-let database;
 let lobbies;
 
 async function connectToDb() {
   return new Promise((resolve, reject) => {
     client.connect()
       .then(() => {
-        database = client.db('G3-Proj2');
+        let database = client.db('G3-Proj2');
         lobbies = database.collection('partides');
         resolve();
       })
@@ -228,5 +227,21 @@ async function getPlayersByLobbyCode(lobby_code) {
   });
 }
 
+async function increseScore(lobby_code, player_name, amount) {
+  return new Promise((resolve, reject) => {
+    lobbies.updateOne(
+      { lobby_code: lobby_code, "players.name": player_name },
+      { $inc: { "players.$.score": amount } }
+    )
+      .then(result => {
+        resolve();
+      })
+      .catch(err => {
+        console.error(err);
+        reject(err);
+      });
+  });
+}
+
 module.exports = { client, connectToDb, insertLobby, getLobbies, lobbyExists, addPlayerToLobby, isPlayerNameAvailable, isLobbyFull, isThereAnyLobby, deleteLobby, 
-  findLobby, playerReady, checkAllReady, leaveLobby, getPlayersByLobbyCode };
+  findLobby, playerReady, checkAllReady, leaveLobby, getPlayersByLobbyCode, increseScore };
