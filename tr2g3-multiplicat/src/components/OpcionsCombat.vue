@@ -3,10 +3,10 @@
     <v-col>
       <v-card style="margin: 0; padding: 0;">
         <v-card-title>
-          {{ preguntesActuals[0].pregunta }}
+          {{ preguntesActuals[currentQuestionIndex].pregunta }}
         </v-card-title>
         <v-row>
-          <v-col cols="6" v-for="respuesta in preguntesActuals[0].respostes" :key="respuesta">
+          <v-col cols="6" v-for="respuesta in preguntesActuals[currentQuestionIndex].respostes" :key="respuesta">
             <v-btn class="ma-1" :disabled="answerSelected" :color="getButtonColor(respuesta)"
               @click="selectAnswer(respuesta)" style="width: 170px; height: 50px;">{{ respuesta.resposta }}</v-btn>
           </v-col>
@@ -27,6 +27,7 @@ import { useAppStore } from '../store/app';
 import { ref, watchEffect } from 'vue';
 import Calculadora from './Calculadora.vue';
 import { socket } from '@/services/socket';
+import router from '@/router';
 
 export default {
   components: {
@@ -37,7 +38,7 @@ export default {
     const preguntesActuals = ref([]);
     const selectedAnswer = ref({});
     const answerSelected = ref(false);
-    let questionsAnswered = 0;
+    let currentQuestionIndex = ref(0);
 
     watchEffect(() => {
       preguntesActuals.value = store.questions;
@@ -49,7 +50,6 @@ export default {
       if (respuesta.correcta) {
         store.reduirVidaEnemic(10);
       }
-      questionsAnswered++;
 
       socket.emit('question answered', respuesta);
     }
@@ -67,13 +67,15 @@ export default {
 
     function nextQuestion() {
       if (selectedAnswer.value) {
-        preguntesActuals.value.shift();
         selectedAnswer.value = {};
         answerSelected.value = false;
       }
 
-      if (questionsAnswered >= preguntesActuals.value.length) {
+      if (currentQuestionIndex.value >= preguntesActuals.value.length - 1) {
+        router.push("/FinishScreen")
         socket.emit("questions ended")
+      } else {
+        currentQuestionIndex.value++;
       }
     }
 
@@ -84,6 +86,7 @@ export default {
       nextQuestion,
       selectedAnswer,
       answerSelected,
+      currentQuestionIndex
     };
   }
 }

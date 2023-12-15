@@ -1,9 +1,11 @@
 <template>
     <div>
         <h1>Ranking</h1>
-        <div v-for="player in playerRankings" :key="player.id">
-            {{ player.name }}:{{ player.score }}
-        </div>
+        <ol>
+            <li v-for="(player, index) in players" :key="player.id">
+                {{ index + 1 }}. {{ player.name }} - {{ player.score }}
+            </li>
+        </ol>
     </div>
 </template>
 
@@ -14,19 +16,17 @@ import { socket } from '@/services/socket';
 
 export default {
     name: 'FinishScreen',
-    components: {
-    },
+    components: {},
     setup() {
         const store = useAppStore();
-        let playerRankings = ref([]);
+        const players = ref([]);
 
-        socket.on("finish ranking", (players) => {
-            store.players = players;
-            playerRankings.value = store.players;
+        watchEffect(() => {
+            players.value = store.players.sort((a, b) => b.score - a.score);;
         });
 
         return {
-            playerRankings
+            players,
         };
     },
 };

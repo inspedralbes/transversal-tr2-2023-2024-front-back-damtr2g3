@@ -7,6 +7,7 @@ const { MongoClient, ServerApiVersion, ObjectId, UUID } = require("mongodb");
 const app = express();
 const server = http.createServer(app);
 const { v4: uuidv4 } = require("uuid");
+const { Console } = require("console");
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -240,7 +241,6 @@ io.on("connection", (socket) => {
 
       if (player) {
         player.status = "finished";
-        io.to(socket.data.name).emit("finished", player);
       }
 
       playersFinished++;

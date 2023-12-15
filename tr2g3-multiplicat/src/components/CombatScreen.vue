@@ -23,11 +23,6 @@ export default {
       playerRankings.value = store.players;
     });
 
-    socket.on("final screen", (data) => {
-      console.log("final");
-      router.push("/FinishScreen")
-    })
-
     return {
       store,
       playerRankings,
