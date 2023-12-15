@@ -56,20 +56,37 @@ app.get("/getPregunta/:id", async (req, res) => {
 app.post("/insertPregunta", async (req, res) => {
   preguntes_mongo.insertPregunta(req.body).then((result) => {
     res.send(result);
+    console.log("La pregunta ha sigut insertada");
   });
 });
 
 app.delete("/deletePregunta/:id", async (req, res) => {
   preguntes_mongo.deletePregunta(req.params.id).then((result) => {
     res.send(result);
+    //console.log("La pregunta ha sigut eliminada")
   });
 });
 
 app.put("/updatePregunta/:id", async (req, res) => {
   preguntes_mongo.updatePregunta(req.params.id, req.body).then((result) => {
     res.send(result);
+    console.log("La pregunta ha sigut actualitzada");
   });
 });
+
+app.get("/getUniqueID", async (req, res) => {
+  let randomID = Math.floor(Math.random() * 100000000);
+  let result = await preguntes_mongo.getPregunta(randomID);
+
+  while (result !== null) {
+    randomID = Math.floor(Math.random() * 100000000);
+    result = await preguntes_mongo.getPregunta(randomID);
+  }
+
+  console.log(randomID);
+  res.send({id: randomID});
+});
+
 
 
 //Gestió de partides amb sockets

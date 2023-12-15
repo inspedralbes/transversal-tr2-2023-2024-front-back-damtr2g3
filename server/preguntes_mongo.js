@@ -1,13 +1,13 @@
-import { client } from "./partides_mongo.js";
+const partides_mongo = require("./partides_mongo")
 
 const dbName = "G3-Proj2";
 let preguntes;
 
 async function connectToPreguntes(){
     return new Promise((resolve, reject) => {
-        client.connect()
+        partides_mongo.client.connect()
             .then(() => {
-                let database = client.db(dbName);
+                let database = partides_mongo.client.db(dbName);
                 preguntes = database.collection('preguntas');
                 resolve();
             })
@@ -63,8 +63,10 @@ async function insertPregunta(pregunta){
 //eliminar una pregunta desde mongo
 async function deletePregunta(pregunta_id){
     return new Promise((resolve, reject) => {
+        pregunta_id = parseInt(pregunta_id);
         preguntes.deleteOne({ id: pregunta_id })
             .then(result => {
+                console.log(result);
                 resolve();
             })
             .catch(err => {
@@ -72,12 +74,12 @@ async function deletePregunta(pregunta_id){
                 reject(err);
             });
     });
-
 }
 
 //modificar una pregunta desde mongo
 async function updatePregunta(pregunta_id, pregunta_nova){
     return new Promise((resolve, reject) => {
+        pregunta_id = parseInt(pregunta_id);
         preguntes.updateOne({ id: pregunta_id }, { $set: pregunta_nova })
             .then(result => {
                 resolve();
@@ -88,5 +90,4 @@ async function updatePregunta(pregunta_id, pregunta_nova){
             });
     });
 }
-
 module.exports = { connectToPreguntes, getAllPreguntes, getPregunta, insertPregunta, deletePregunta, updatePregunta }
