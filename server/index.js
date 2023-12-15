@@ -7,7 +7,7 @@ const mysql=require('mysql2/promise')
 var nodemailer = require('nodemailer');
 
 app.use(express.static('public'));
-app.use('/', express.static('/'));
+app.use(express.static('grafics'));
 
 app.use(cors(
     {"origin": "*",

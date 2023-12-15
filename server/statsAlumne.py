@@ -20,7 +20,7 @@ def puntuacio (info2):
     ax.set_xticklabels(x_values)       
     ax.set_xlabel('')  
     ax.set_ylabel('')
-    plt.savefig('./graficsAlumnes/'+info2.idAlum+'/puntuacio.jpeg')
+    plt.savefig('./grafics/graficsAlumnes/'+info2.idAlum+'/puntuacio.jpeg')
 
 def acertErrorXtema (info2): 
     df = pd.DataFrame(info2['stats'])
@@ -33,5 +33,5 @@ def acertErrorXtema (info2):
     ax.set_xticklabels(x_values)       
     ax.set_xlabel('Tema')  
     ax.set_ylabel('%Acerts')
-    plt.savefig('./graficsAlumnes/'+info2.idAlum+'/acertsErrors.jpeg')
+    plt.savefig('./grafics/graficsAlumnes/'+info2.idAlum+'/acertsErrors.jpeg')
 

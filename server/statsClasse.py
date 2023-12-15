@@ -19,6 +19,6 @@ def acertErrorXtema (info2):
     ax.set_xticklabels(x_values)       
     ax.set_xlabel('Tema')  
     ax.set_ylabel('%Acerts')
-    plt.savefig('./graficsAlumnes/'+info2.idClasse+'/acertsErrors.jpeg')
+    plt.savefig('./grafics/graficsAlumnes/'+info2.idClasse+'/acertsErrors.jpeg')
     plt.show()
     #plt.close('all')
