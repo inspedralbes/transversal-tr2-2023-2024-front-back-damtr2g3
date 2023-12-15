@@ -6,6 +6,9 @@ const bbdd=require('./bbdd.js');
 const mysql=require('mysql2/promise')
 var nodemailer = require('nodemailer');
 
+app.use(express.static('public'));
+app.use('/', express.static('/'));
+
 app.use(cors(
     {"origin": "*",
     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
