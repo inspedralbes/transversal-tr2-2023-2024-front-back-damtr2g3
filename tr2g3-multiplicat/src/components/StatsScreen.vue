@@ -27,8 +27,8 @@ export default {
                 datasets: [ data.stats.correcte / data.stats.incorrecte  ]
             },
             chartData2: {
-                labels: [ data.stats.tema ],
-                datasets: [ data.stats.correcte / data.stats.incorrecte  ]
+                labels: ["Puntuacio" ],
+                datasets: [ data.puntuacio  ]
             },
             chartOptions: {
                 responsive: true

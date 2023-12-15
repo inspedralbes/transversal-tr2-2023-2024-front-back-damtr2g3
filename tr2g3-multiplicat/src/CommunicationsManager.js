@@ -1,7 +1,6 @@
-export async function getUserInfo(user, isLogged){
+export async function getUserInfo(user){
     const dades={
-        user: user,
-        logged: isLogged 
+        student: user,
     };
     const response = await fetch('http://localhost:3001/infoUser', 
     {

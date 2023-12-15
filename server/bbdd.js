@@ -13,7 +13,8 @@ const dbName = "G3-Proj2";
 //contrasenya:adminADMIN1 bbdd:a22celgariba_Proj2-G3 user:a22celgariba_admin--------dades MySql
 //	idPartida	idClasse	idAlumne	idProfesor	capacitat	puntuacio	tema
 module.exports={obtenirPreguntes, login, ObtenirInfoUsuari, CambiarContrasena, loginProf, dadesAlumnesClasse, classesProf,
-     crearAlumne, validarUsuari, eliminarUsuari, ObtenirInscrits, revisarClasses, preguntaContestada, recollirStatsAlumne, recollirStatsClasse}
+     crearAlumne, validarUsuari, eliminarUsuari, ObtenirInscrits, revisarClasses, preguntaContestada, recollirStatsAlumne,
+      recollirStatsClasse, recollirStatsPregunta}
 
 async function obtenirPreguntes(numPreguntes){
     await client.connect();
@@ -177,3 +178,10 @@ async function recollirStatsClasse(classe){
     dades=col.find({$elemMatch:{idClasse:classe}}) 
     return dades
 }//obte les estadistiques d'una classe en concret
+async function recollirStatsPregunta(){
+    await client.connect();
+    const db = client.db(dbName);
+    const col = db.collection("Preguntes");
+    dades=col.find() 
+    return dades
+}//obte les estadistiques de les preguntes per poder fer el cluster

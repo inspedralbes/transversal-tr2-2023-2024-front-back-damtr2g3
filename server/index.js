@@ -86,7 +86,7 @@ app.post("/loginProf", function (req, res) {
     })
 })//crida al login, return id del prof si es true
 app.post("/infoUser", function(req, res){
-    usuari=usuari=req.body.user
+    usuari=req.body.user
     info=bbdd.ObtenirInfoUsuari(usuari, connection) 
     info=JSON.parse(info)
     res.json(info)
@@ -156,15 +156,14 @@ app.post("/obtenirDadesAlumneVue", function (req, res){
     dades=bbdd.recollirStatsAlumne(alumne)
     res.json(dades)
 })//envia estadistiques a vue per generar grafics
-app.post("/generarDadesAlumneAndroid", function(req, res){ 
-    alumne=req.body.username
+function generarGraficsAlumne(alumneDesitjat){ 
+    alumne=alumneDesitjat
     dades=bbdd.recollirStatsAlumne(alumne)
     spawn('python3', ["./statsAlumne", dades])
-    
     //crida a python
-})//envia estadistiques a un script per poder passar grafics del alumne a android
-app.post("/generarDadesClasse", function(req, res){ //malament refer tot, utilitzar static path
-    classe=req.body.classe
+}//envia estadistiques a un script per poder generar grafics del alumne a android
+function generarGraficsClasse(classeDesitjada){ 
+    classe=classeDesitjada
     info=bbdd.recollirStatsClasse(classe)
     const infoParsejada = {
         idClasse:info.idClasse
@@ -180,4 +179,8 @@ app.post("/generarDadesClasse", function(req, res){ //malament refer tot, utilit
     })
     spawn('python3', ["./statsClasse", info])
     //crida a python
-})//envia estadistiques a un script per poder passar grafics de la classe
+}//envia estadistiques a un script per poder generar grafics de la classe
+function generarGraficsPreguntes(){
+    dadesPreguntes=bbdd.recollirStatsPregunta()
+    spawn('python3', ["./statsPregunta", dadesPreguntes])
+}//envia estadistiques a un script per poder generar grafics de les preguntes
