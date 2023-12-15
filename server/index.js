@@ -3,9 +3,10 @@ const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId, UUID } = require("mongodb");
 const app = express();
 const server = http.createServer(app);
+const { v4: uuidv4 } = require("uuid");
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -95,6 +96,7 @@ io.on("connection", (socket) => {
             if (available) {
               lobby.players.push({
                 name: data.name,
+                playerID: data.playerID,
                 score: 0,
                 status: "connected",
                 ready: false,
@@ -102,6 +104,7 @@ io.on("connection", (socket) => {
               socket.join(data.lobby_code);
               socket.data.current_lobby = data.lobby_code;
               socket.data.name = data.name;
+              socket.data.id = data.playerID;
               sendPlayerList(socket);
               sendQuestions(socket);
             } else {
@@ -137,9 +140,9 @@ io.on("connection", (socket) => {
     let readyUsers = 0;
 
     lobbies.forEach((lobby) => {
-      if ((lobby.lobby_code = socket.data.lobby_code)) {
+      if (lobby.lobby_code === socket.data.lobby_code) {
         lobby.players.forEach((player) => {
-          if (player.name == socket.data.name) {
+          if (player.name === socket.data.name) {
             player.ready = true;
           }
         });
@@ -205,6 +208,43 @@ io.on("connection", (socket) => {
         }
       }
     });
+  });
+
+  socket.on("question answered", (data) => {
+    let lobby = lobbies.find(
+      (lobby) => lobby.lobby_code == socket.data.current_lobby
+    );
+    if (lobby) {
+      let player = lobby.players.find(
+        (player) => player.name == socket.data.name
+      );
+      if (player) {
+        if (data.correcta) {
+          player.score += 10;
+        }
+        io.to(socket.data.current_lobby).emit("player list", lobby.players);
+      }
+    }
+  });
+
+  let playersFinished = 0;
+  socket.on("questions ended", () => {
+    let lobby = lobbies.find(
+      (lobby) => lobby.lobby_code == socket.data.current_lobby
+    );
+
+    if (lobby) {
+      let player = lobby.players.find(
+        (player) => player.name == socket.data.name
+      );
+
+      if (player) {
+        player.status = "finished";
+        io.to(socket.data.name).emit("finished", player);
+      }
+
+      playersFinished++;
+    }
   });
 });
 

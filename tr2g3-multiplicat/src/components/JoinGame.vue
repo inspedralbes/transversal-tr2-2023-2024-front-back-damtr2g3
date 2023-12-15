@@ -13,7 +13,6 @@
                     class="ready-button ready-button-not-ready">Ready</button>
                 <button v-else class="ready-button ready-button-ready" disabled>Ready</button>
             </div>
-            <div v-if="showCountdown">{{ countdownSecs }}</div>
         </div>
     </div>
 </template>
@@ -23,6 +22,7 @@ import { useAppStore } from "../store/app";
 import { socket } from "@/services/socket";
 import { ref } from 'vue';
 import { useRouter } from 'vue-router'
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
     name: "JoinGame",
@@ -30,6 +30,7 @@ export default {
         return {
             username: "",
             lobbyCode: "",
+            playerID: "",
             showCountdown: false,
             countdownSecs: 0,
         };
@@ -38,22 +39,8 @@ export default {
         const store = useAppStore();
         const router = useRouter();
 
-        socket.on("start countdown", () => {
-            this.showCountdown = true;
-            this.countdownSecs = 5;
-
-            const interval = setInterval(function () {
-                this.countdownSecs--;
-                if (this.countdownSecs <= 0) {
-                    this.showCountdown = false;
-                    clearInterval(interval);
-                }
-            }, 5000);
-        })
-
         socket.on("questions received", (questions) => {
             store.questions = questions.randomQuestions;
-            console.log(store.questions);
         });
 
         socket.on("start game", (data) => {
@@ -61,7 +48,6 @@ export default {
         });
 
         socket.on("player list", (players) => {
-            console.log(players);
             store.players = players;
         });
 
@@ -74,7 +60,8 @@ export default {
             if (this.username && this.lobbyCode) {
                 const data = {
                     name: this.username,
-                    lobby_code: this.lobbyCode
+                    lobby_code: this.lobbyCode,
+                    playerID: uuidv4()
                 };
                 socket.emit("join lobby", data);
             }

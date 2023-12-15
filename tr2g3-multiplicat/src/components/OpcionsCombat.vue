@@ -6,11 +6,9 @@
           {{ preguntesActuals[0].pregunta }}
         </v-card-title>
         <v-row>
-          <v-col cols="12">
-            <v-btn class="ma-2" :disabled="answerSelected" :color="getButtonColor(respuesta)"
-              v-for="respuesta in preguntesActuals[0].respostes" :key="respuesta" @click="selectAnswer(respuesta)">{{
-                respuesta.resposta }}
-            </v-btn>
+          <v-col cols="6" v-for="respuesta in preguntesActuals[0].respostes" :key="respuesta">
+            <v-btn class="ma-1" :disabled="answerSelected" :color="getButtonColor(respuesta)"
+              @click="selectAnswer(respuesta)" style="width: 170px; height: 50px;">{{ respuesta.resposta }}</v-btn>
           </v-col>
         </v-row>
         <v-btn v-if="answerSelected" color="primary" @click="nextQuestion">Següent pregunta</v-btn>
@@ -28,6 +26,7 @@
 import { useAppStore } from '../store/app';
 import { ref, watchEffect } from 'vue';
 import Calculadora from './Calculadora.vue';
+import { socket } from '@/services/socket';
 
 export default {
   components: {
@@ -38,6 +37,7 @@ export default {
     const preguntesActuals = ref([]);
     const selectedAnswer = ref({});
     const answerSelected = ref(false);
+    let questionsAnswered = 0;
 
     watchEffect(() => {
       preguntesActuals.value = store.questions;
@@ -49,7 +49,9 @@ export default {
       if (respuesta.correcta) {
         store.reduirVidaEnemic(10);
       }
-      console.log(`Has seleccionat: ${respuesta.resposta}`);
+      questionsAnswered++;
+
+      socket.emit('question answered', respuesta);
     }
 
     function getButtonColor(respuesta) {
@@ -68,6 +70,10 @@ export default {
         preguntesActuals.value.shift();
         selectedAnswer.value = {};
         answerSelected.value = false;
+      }
+
+      if (questionsAnswered >= preguntesActuals.value.length) {
+        socket.emit("questions ended")
       }
     }
 

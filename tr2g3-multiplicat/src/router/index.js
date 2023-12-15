@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import CombatScreen from "@/components/CombatScreen.vue";
 import JoinGame from "@/components/JoinGame.vue";
 import CreateGame from "@/components/CreateGame.vue";
+import FinishScreen from "@/components/FinishScreen.vue";
 
 const routes = [
   {
@@ -19,6 +20,11 @@ const routes = [
     path: "/CreateGame",
     name: "CreateGame",
     component: CreateGame,
+  },
+  {
+    path: "/FinishScreen",
+    name: "FinishScreen",
+    component: FinishScreen,
   },
 ];
 
