@@ -86,7 +86,7 @@ app.post("/loginProf", function (req, res) {
     })
 })//crida al login, return id del prof si es true
 app.post("/infoUser", function(req, res){
-    usuari=req.body.user
+    usuari=req.body.username
     info=bbdd.ObtenirInfoUsuari(usuari, connection) 
     info=JSON.parse(info)
     res.json(info)
@@ -156,6 +156,41 @@ app.post("/obtenirDadesAlumneVue", function (req, res){
     dades=bbdd.recollirStatsAlumne(alumne)
     res.json(dades)
 })//envia estadistiques a vue per generar grafics
+app.post("/obtenirStatsTextualsAlumne", function (req, res){
+    alumne=req.body.username
+    dadesTextuals={
+        millor:"",
+        pitjor:"",
+        avgPuntuacio:""
+    }
+    dades=bbdd.recollirStatsAlumne(alumne)
+
+    //sumar totes les puntuacions i calcular la mitjana
+    let puntuacioTotal = 0
+    for(var i=0; i<dades.puntuacio.length; i++){
+        puntuacioTotal+=dades.puntuacio[i]
+    }
+    dadesTextuals=puntuacioTotal/dades.puntuacio.length
+
+    //parsejem les dades en un json auxiliar i el ordenem per ordre
+    jsonAuxiliar=[{
+        tema:"",
+        nota:0
+    }]
+    for(let i=0; i<dades.stats.length;i++){
+        jsonAuxiliar[i].tema=dades.stats[i].tema
+        jsonAuxiliar[i].nota=dades.stats[i].acerts/dades.stats[i].errors
+    }
+    jsonAuxiliar = jsonAuxiliar.sort((a, b) =>  a.nota.localeCompare(b.nota));
+    dadesTextuals.millor=jsonAuxiliar[0].tema
+    dadesTextuals.pitjor=jsonAuxiliar[jsonAuxiliar.length-1].tema
+
+
+    res.json(dadesTextuals)
+})
+
+
+//------------------cridar aquestes funcions al acabar una partida
 function generarGraficsAlumne(alumneDesitjat){ 
     alumne=alumneDesitjat
     dades=bbdd.recollirStatsAlumne(alumne)
