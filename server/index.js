@@ -15,7 +15,7 @@ app.use(cors(
     "optionsSuccessStatus": 204
     }
 ))
-app.use(express.json());
+app.use(express.json({ strict: false }))
 app.listen(PORT, () => {console.log('Server running');});
 const connection = mysql.createPool({
     host: "dam.inspedralbes.cat",
