@@ -21,13 +21,16 @@ const { connect } = require("http2");
 app.use(bodyParser.json());
 app.use(cors());
 
-function getQuestions() {
+function getQuestions(subject) {
   return new Promise(async (resolve, reject) => {
     try {;
       const db = lobbies_mongo.client.db("G3-Proj2");
       const collection = db.collection("preguntas");
       const questions = collection
-        .aggregate([{ $sample: { size: 10 } }])
+        .aggregate([
+          { $match: { subject: subject } },
+          { $sample: { size: 10 } }
+        ])
         .toArray();
       resolve(questions);
     } catch (err) {
@@ -90,19 +93,23 @@ app.get("/getUniqueID", async (req, res) => {
 
 
 //Gestió de partides amb sockets
-/*
 app.get("/incrementScore", (req, res) => {
   const { lobbyId, playerName, incrementAmount } = req.query;
 
   io.emit("increment score", { lobbyId, playerName, incrementAmount });
-  increaseScore(lobbyId, playerName, parseInt(incrementAmount));
+  lobbies_mongo.increaseScore(lobbyId, playerName, parseInt(incrementAmount));
   res.send("Score incremented");
 });
-*/
+
+
+const PORT = process.env.PORT || 3333;
 
 lobbies_mongo.connectToDb()
   .then(() => {
     console.log("Connected to database");
+    server.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
     io.on("connection", (socket) => {
       console.log("A user connected");
       sendLobbyList();
@@ -128,7 +135,7 @@ lobbies_mongo.connectToDb()
           if (!lobby_exists) {
             console.log("New lobby created");
             let questions;
-            getQuestions().then((result) => {
+            getQuestions(data.subject).then((result) => {
               questions = result;
               let lobby = {
                 lobby_code: data.lobby_code,
@@ -309,7 +316,3 @@ function sendLobbyList() {
   });
 }
 
-const PORT = process.env.PORT || 3333;
-server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
