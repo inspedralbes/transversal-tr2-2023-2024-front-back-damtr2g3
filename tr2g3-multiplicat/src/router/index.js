@@ -8,6 +8,7 @@ import EndGameScreen from '@/components/EndGameScreen.vue'
 import LobbyScreen from '@/components/LobbyScreen.vue'
 import StatsScreen from '@/components/StatsScreen.vue'
 import GachaponScreen from '@/components/GachaponScreen.vue'
+import opcions from '@/components/opcions.vue'
 
 const routes = [
   {
@@ -49,6 +50,11 @@ const routes = [
     path: '/lobby',
     name: 'Player Lobby',
     component: LobbyScreen 
+  },
+  {
+    path:'/options',
+    name:'Opcions',
+    component: opcions
   }
 ]
 

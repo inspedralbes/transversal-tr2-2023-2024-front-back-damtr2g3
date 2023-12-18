@@ -14,7 +14,7 @@ const dbName = "G3-Proj2";
 //	idPartida	idClasse	idAlumne	idProfesor	capacitat	puntuacio	tema
 module.exports={obtenirPreguntes, login, ObtenirInfoUsuari, CambiarContrasena, loginProf, dadesAlumnesClasse, classesProf,
      crearAlumne, validarUsuari, eliminarUsuari, ObtenirInscrits, revisarClasses, preguntaContestada, recollirStatsAlumne,
-      recollirStatsClasse, recollirStatsPregunta}
+      recollirStatsClasse, recollirStatsPregunta, recollirColors}
 
 async function obtenirPreguntes(numPreguntes){
     await client.connect();
@@ -185,3 +185,10 @@ async function recollirStatsPregunta(){
     dades=col.find() 
     return dades
 }//obte les estadistiques de les preguntes per poder fer el cluster
+async function recollirColors(alumne){
+    await client.connect();
+    const db = client.db(dbName);
+    const col = db.collection("Gacha");
+    dades=col.find({$elemMatch:{idAlum:alumne}}) 
+    return dades
+}

@@ -8,7 +8,7 @@ from datetime import date
 info = sys.argv[1]
 info2=json.loads(info)
 
-def puntuacio (info2): 
+def clusterAcertsErrors (info2): 
     df = pd.DataFrame(info2)
     y_values = df['correcta']
     x_values = df['erronea']

@@ -6,7 +6,6 @@ const bbdd=require('./bbdd.js');
 const mysql=require('mysql2/promise')
 var nodemailer = require('nodemailer');
 
-app.use(express.static('public'));
 app.use(express.static('grafics'));
 
 app.use(cors(
@@ -187,8 +186,12 @@ app.post("/obtenirStatsTextualsAlumne", function (req, res){
 
 
     res.json(dadesTextuals)
-})
-
+})//transforma diferents dades del json en estadstiques legibles per un usuari
+app.post("/colorsGacha", function(req, res){
+    alumne=req.body.alumne
+    data=bbdd.recollirColors(alumne)
+    res.json(data.backgroud)
+})//recolleix tota a info del gacha del usuari i retorna els colors de fons de pantalla
 
 //------------------cridar aquestes funcions al acabar una partida
 function generarGraficsAlumne(alumneDesitjat){ 

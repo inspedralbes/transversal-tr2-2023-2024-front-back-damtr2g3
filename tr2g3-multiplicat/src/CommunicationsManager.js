@@ -103,3 +103,20 @@ export async function obtenirStats(username){
     const stats = await response.json();
     return stats;
 }//envia l'usuari i recupera un json de les estadistiques
+
+export async function geColorsGacha(user){
+    const dades={
+        student: user,
+    };
+    const response = await fetch('http://localhost:3001/colorsGacha', 
+    {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dades),
+        mode: "cors"
+    });
+    const userInfo = await response.json();
+    return userInfo;
+}//obte els colors que pot seleccinar el usuari
