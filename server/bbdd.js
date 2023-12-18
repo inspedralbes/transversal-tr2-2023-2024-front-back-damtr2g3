@@ -89,7 +89,7 @@ async function dadesAlumnesClasse(classe, connection){
 }//retorna tots els alumnes que pertanyen a una classe en concret
 async function classesProf(idProf, connection){
     try{
-        operacioBBDD=('Select DISTINCT curs, nomClasse, iClasse From classe JOIN clase_Profesor On clase_Profesor.idProf='+"'"+idProf+"'")
+        operacioBBDD=('Select DISTINCT curs, nomClasse, idClasse From classe JOIN clase_Profesor ON clase_Profesor.idProf='+"'"+idProf+"'")
         const [rows, fields] = await connection.execute(operacioBBDD);
         const usuariosJSON = JSON.stringify(rows);
         return usuariosJSON;
