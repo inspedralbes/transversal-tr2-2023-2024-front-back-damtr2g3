@@ -39,19 +39,34 @@ export default {
     const selectedAnswer = ref({});
     const answerSelected = ref(false);
     let currentQuestionIndex = ref(0);
+    let startTime = ref(null);
 
     watchEffect(() => {
       preguntesActuals.value = store.questions;
+      startTime.value = Date.now();
     });
 
     function selectAnswer(respuesta) {
+      let answerTimeInMS = Date.now() - startTime.value;
+      let answerTime = (answerTimeInMS / 1000).toFixed(2); // Redondea a 2 decimales
+
+
       selectedAnswer.value = respuesta;
       answerSelected.value = true;
       if (respuesta.correcta) {
         store.reduirVidaEnemic(10);
       }
 
+      let answerData = {
+        playerId: store.playerId,
+        questionId: preguntesActuals.value[currentQuestionIndex.value].id,
+        question: preguntesActuals.value[currentQuestionIndex.value].pregunta,
+        correctAnswer: preguntesActuals.value[currentQuestionIndex.value].respostes.find((resposta) => resposta.correcta).resposta,
+        answerTime: answerTime
+      };
+
       socket.emit('question answered', respuesta);
+      socket.emit('answer data', answerData);
     }
 
     function getButtonColor(respuesta) {

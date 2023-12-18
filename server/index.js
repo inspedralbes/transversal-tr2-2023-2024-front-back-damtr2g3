@@ -228,6 +228,24 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("answer data", (data) => {
+    let lobby = lobbies.find(
+      (lobby) => lobby.lobby_code == socket.data.current_lobby
+    );
+    if (lobby) {
+      let player = lobby.players.find(
+        (player) => player.name == socket.data.name
+      );
+      if (player) {
+        if (!player.answerData) {
+          player.answerData = [];
+        }
+        player.answerData.push(data);
+        console.log(player);
+      }
+    }
+  });
+
   let playersFinished = 0;
   socket.on("questions ended", () => {
     let lobby = lobbies.find(
