@@ -1,7 +1,6 @@
 <template>
     <div id="app">
-    <swatches-picker v-model="color" :colors="palette"></swatches-picker>
-    <div class="preview" :style="{ backgroundColor: color }"></div>
+    <swatches-picker  v-model="this.color" :colors="palette"></swatches-picker>
   </div>
 </template>
 
@@ -16,7 +15,7 @@
         },
         data() {
             return {
-                colorInicial: '#194d33',
+                color:"",
                 colorsConseguits: []
             };
             
@@ -26,6 +25,9 @@
                 if(this.connexioPinia){
                     this.colorsConseguits=geColorsGacha(this.StoredUsername)
                 }
+            },
+            cambiarColor(nouColor){
+                this.store.fonsDePantalla.background=this.color
             }
 
         },
@@ -39,6 +41,7 @@
             let connexioPinia = store.loginInfo.loggedIn;
 
             return{
+                store,
                 connexioPinia,
                 StoredUsername
             }

@@ -22,7 +22,7 @@ export const useAppStore = defineStore('app', {
       enemyLife: 100,
       maxLife: 100,
     },
-    
+    fonsDePantalla:background,
   }),
   actions: {
     setLoginInfo({ loggedIn, username, image }) {
@@ -42,6 +42,7 @@ export const useAppStore = defineStore('app', {
     logejarUser(username){
       this.loggedIn=true;
       this.username=username
-    }
+    },
+
   },
 });
