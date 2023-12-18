@@ -24,7 +24,7 @@ app.use(cors());
 function getQuestions() {
   return new Promise(async (resolve, reject) => {
     try {;
-      const db = client.db("G3-Proj2");
+      const db = lobbies_mongo.client.db("G3-Proj2");
       const collection = db.collection("preguntas");
       const questions = collection
         .aggregate([{ $sample: { size: 10 } }])
@@ -204,6 +204,7 @@ lobbies_mongo.connectToDb()
               socket.join(data.lobby_code);
               socket.data.current_lobby = data.lobby_code;
               socket.data.name = data.name;
+              sendLobbyList();
               sendPlayerList(socket);
               sendQuestions(socket);
             });
