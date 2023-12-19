@@ -17,8 +17,10 @@ const io = new Server(server, {
 
 const lobbies_mongo = require("./partides_mongo.js");
 const preguntes_mongo = require("./preguntes_mongo.js");
+const stats_mongo = require("./stats_mongo.js");
 const { join } = require("path");
 const { connect } = require("http2");
+const { stat } = require("fs");
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -74,6 +76,7 @@ function getQuestions(subject) {
 
 //Gestió de preguntes
 preguntes_mongo.connectToPreguntes();
+stats_mongo.connectToStats();
 
 app.get("/getPreguntes", async (req, res) => {
   preguntes_mongo.getAllPreguntes().then((result) => {
@@ -256,14 +259,14 @@ lobbies_mongo.connectToDb()
         lobbies_mongo.playerReady(player.lobby_code, player.name).then((result) => {
           lobbies_mongo.checkAllReady(player.lobby_code).then((result) => {
             if (result) {
-              io.to(socket.data.current_lobby).emit("player list", lobby.players);
+              sendPlayerList(socket);
               io.to(socket.data.current_lobby).emit("start game");
               io.to(socket.data.lobby_code).emit("start countdown");
               setTimeout(() => {
                 io.to(socket.data.lobby_code).emit("start game");
               }, 5000);
             } else {
-              io.to(socket.data.current_lobby).emit("player list", lobby.players);
+              sendPlayerList(socket);
             }
           });
         });
@@ -305,14 +308,14 @@ lobbies_mongo.connectToDb()
 
       socket.on("question answered", data => {
         console.log(data);
-        lobbies_mongo.updateScore(data.lobby_code, data.name, data.score).then((result) => {
+        lobbies_mongo.increaseScore(data.lobby_code, data.name, data.score).then((result) => {
           sendPlayerList(socket);
         });
       });
 
       socket.on("answer data", data => {
-        lobbies_mongo.addAnswerData(data.lobby_code, data.name, data.answerData).then((result) => {
-          console.log("Answer data added");
+        stats_mongo.insertStats(data).then((result) => {
+          console.log("Stats inserted");
         });
       });
 
@@ -347,20 +350,25 @@ lobbies_mongo.connectToDb()
   });
 
 function sendPlayerList(socket) {
-  let currentLobby = lobbies_mongo.findLobby(socket.data.current_lobby);
-  if (currentLobby) {
-    io.to(socket.data.current_lobby).emit("player list", currentLobby.players);
-  }
+  lobbies_mongo.findLobby(socket.data.current_lobby).then((result) => {
+    let currentLobby = result;
+    if (currentLobby) {
+      io.to(socket.data.current_lobby).emit("player list", currentLobby.players);
+    }
+  });
 }
 
 function sendQuestions(socket) {
-  let currentLobby = lobbies_mongo.findLobby(socket.data.current_lobby);
-  if (currentLobby) {
-    io.to(socket.data.current_lobby).emit(
-      "questions received",
-      currentLobby.questions
-    );
-  }
+  lobbies_mongo.findLobby(socket.data.current_lobby).then((result) => {
+    let currentLobby = result;
+    if (currentLobby) {
+      io.to(socket.data.current_lobby).emit(
+        "questions received",
+        currentLobby.questions
+      );
+    }
+  });
+  
 }
 
 function sendLobbyList() {

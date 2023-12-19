@@ -1,13 +1,12 @@
 const partides_mongo = require("./partides_mongo")
 
-const dbName = "G3-Proj2";
 let preguntes;
 
 async function connectToPreguntes(){
     return new Promise((resolve, reject) => {
         partides_mongo.client.connect()
             .then(() => {
-                let database = partides_mongo.client.db(dbName);
+                let database = partides_mongo.client.db(partides_mongo.dbName);
                 preguntes = database.collection('preguntas');
                 resolve();
             })

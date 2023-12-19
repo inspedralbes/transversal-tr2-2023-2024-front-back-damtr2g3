@@ -49,12 +49,13 @@ export default {
     function selectAnswer(respuesta) {
       let answerTimeInMS = Date.now() - startTime.value;
       let answerTime = (answerTimeInMS / 1000).toFixed(2); // Redondea a 2 decimales
+      let amountIncrease = 10;
 
 
       selectedAnswer.value = respuesta;
       answerSelected.value = true;
       if (respuesta.correcta) {
-        store.reduirVidaEnemic(10);
+        store.reduirVidaEnemic(amountIncrease);
       }
 
       let answerData = {
@@ -65,7 +66,13 @@ export default {
         answerTime: answerTime
       };
 
-      socket.emit('question answered', respuesta);
+      let data = {
+        lobby_code: store.playerId,
+        name: store.playerName,
+        score: amountIncrease
+      };
+
+      socket.emit('question answered', data);
       socket.emit('answer data', answerData);
     }
 
@@ -87,8 +94,12 @@ export default {
       }
 
       if (currentQuestionIndex.value >= preguntesActuals.value.length - 1) {
-        router.push("/FinishScreen")
-        socket.emit("questions ended")
+        router.push("/FinishScreen");
+        let data = {
+          lobby_code: store.playerId,
+          name: store.playerName
+        };
+        socket.emit("questions ended", data);
       } else {
         currentQuestionIndex.value++;
       }

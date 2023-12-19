@@ -40,7 +40,7 @@ export default {
         const router = useRouter();
 
         socket.on("questions received", (questions) => {
-            store.questions = questions.randomQuestions;
+            store.questions = questions;
         });
 
         socket.on("start game", (data) => {
@@ -48,6 +48,7 @@ export default {
         });
 
         socket.on("player list", (players) => {
+            console.log(players);
             store.players = players;
         });
 
@@ -60,7 +61,7 @@ export default {
             if (this.username && this.lobbyCode) {
                 const data = {
                     name: this.username,
-                    lobby_code: this.lobbyCode,
+                    lobby_code: this.lobbyCode.toString(),
                     playerID: uuidv4()
                 };
                 socket.emit("join lobby", data);

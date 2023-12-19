@@ -12,12 +12,13 @@ const client = new MongoClient(uri, {
 });
 
 let lobbies;
+const dbName = "G3-Proj2";
 
 async function connectToDb() {
   return new Promise((resolve, reject) => {
     client.connect()
       .then(() => {
-        let database = client.db('G3-Proj2');
+        let database = client.db(dbName);
         lobbies = database.collection('partides');
         resolve();
       })
@@ -185,6 +186,7 @@ async function checkAllReady(current_lobby_code) {
   return new Promise((resolve, reject) => {
     lobbies.findOne({ lobby_code: current_lobby_code })
       .then(result => {
+        console.log(result);
         if (result.players.every((player) => player.ready)) {
           resolve(true);
         } else {
@@ -243,27 +245,11 @@ async function increaseScore(lobby_code, player_name, amount) {
   });
 }
 
-async function addAnswerData(lobby_code, player_name, answer_data) {
-  return new Promise((resolve, reject) => {
-    lobbies.updateOne(
-      { lobby_code: lobby_code, "players.name": player_name },
-      { $push: { "players.$.answers": answer_data } }
-    )
-      .then(result => {
-        resolve();
-      })
-      .catch(err => {
-        console.error(err);
-        reject(err);
-      });
-  });
-}
-
 async function playerFinished(lobby_code, player_name) {
   return new Promise((resolve, reject) => {
     lobbies.updateOne(
       { lobby_code: lobby_code, "players.name": player_name },
-      { $set: { "players.$.status": finished } }
+      { $set: { "players.$.status": "finished" } }
     )
       .then(result => {
         resolve();
@@ -275,5 +261,22 @@ async function playerFinished(lobby_code, player_name) {
   });
 }
 
-module.exports = { client, connectToDb, insertLobby, getLobbies, lobbyExists, addPlayerToLobby, isPlayerNameAvailable, isLobbyFull, isThereAnyLobby, deleteLobby, 
-  findLobby, playerReady, checkAllReady, leaveLobby, getPlayersByLobbyCode, increaseScore, addAnswerData, playerFinished };
+async function checkAllFinished(lobby_code) {
+  return new Promise((resolve, reject) => {
+    lobbies.findOne({ lobby_code: lobby_code })
+      .then(result => {
+        if (result.players.every((player) => player.status === "finished")) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        reject(err);
+      });
+  });
+}
+
+module.exports = { client, dbName, connectToDb, insertLobby, getLobbies, lobbyExists, addPlayerToLobby, isPlayerNameAvailable, isLobbyFull, isThereAnyLobby, deleteLobby, 
+  findLobby, playerReady, checkAllReady, leaveLobby, getPlayersByLobbyCode, increaseScore, playerFinished, checkAllFinished };
