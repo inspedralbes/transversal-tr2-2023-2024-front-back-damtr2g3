@@ -3,9 +3,11 @@ const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId, UUID } = require("mongodb");
 const app = express();
 const server = http.createServer(app);
+const { v4: uuidv4 } = require("uuid");
+const { Console } = require("console");
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -20,6 +22,35 @@ const { connect } = require("http2");
 
 app.use(bodyParser.json());
 app.use(cors());
+
+const uri =
+  "mongodb+srv://a22celgariba:5xaChqdY3ei4ukcp@cluster0.2skn7nc.mongodb.net/?retryWrites=true&w=majority";
+
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+    poolSize: 15,
+  },
+});
+
+function getQuestions() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await client.connect();
+      const db = client.db("G3-Proj2");
+      const collection = db.collection("preguntas");
+      const questions = collection
+        .aggregate([{ $sample: { size: 10 } }])
+        .toArray();
+      resolve(questions);
+    } catch (err) {
+      console.error(err);
+      reject(err);
+    }
+  });
+}
 
 function getQuestions(subject) {
   return new Promise(async (resolve, reject) => {
