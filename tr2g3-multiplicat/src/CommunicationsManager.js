@@ -87,6 +87,7 @@ export async function revisarClasses(){
 }//recupera un llistat de totes les classes
 
 export async function obtenirStats(username){
+    console.log("comunications manager")
     const dades ={
         username: username,
     }
@@ -105,6 +106,7 @@ export async function obtenirStats(username){
 }//envia l'usuari i recupera un json de les estadistiques
 
 export async function geColorsGacha(user){
+    console.log("comunications manager")
     const dades={
         student: user,
     };
@@ -118,5 +120,6 @@ export async function geColorsGacha(user){
         mode: "cors"
     });
     const userInfo = await response.json();
+    console.log(userInfo)
     return userInfo;
 }//obte els colors que pot seleccinar el usuari

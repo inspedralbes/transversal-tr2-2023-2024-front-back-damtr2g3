@@ -15,15 +15,28 @@
         </v-btn>
       </v-col>
       <v-col md="4">
-        <v-btn class="menu_option_button" style="background-color:yellow;" @click="this.$router.push('/stats')">
+        <v-btn class="menu_option_button" style="background-color:yellow;"  @click="snackbar = true">
           Statistics
         </v-btn>
         <v-btn class="menu_option_button" style="margin-top: 300px; background-color:orange;" @click="this.$router.push('/gacha')">
           Gachapon
         </v-btn>
-        <v-btn class="menu_option_button" style="margin-top: 300px; background-color:rgb(97, 80, 175);" @click="this.$router.push('/options')">
+        <v-btn class="menu_option_button" style="margin-top: 300px; background-color:rgb(97, 80, 175);"  @click="this.$router.push('/options')">
           Opcions
         </v-btn>
+        <v-snackbar v-model="snackbar" :timeout="timeout">
+          {{ text }}
+
+        <template v-slot:actions>
+          <v-btn
+            color="red"
+            variant="text"
+            @click="snackbar = false"
+          >
+        Ok
+        </v-btn>
+        </template>
+      </v-snackbar>
       </v-col>
     </v-row>
   </v-container>
@@ -33,8 +46,11 @@
   <script>
   export default {
     data() {
-      
-    },
+      return {
+      snackbar:false,
+      text:'Estan en manteniment, siusplau tingues paciencia ',
+      timeout:2000
+    }},
     methods: {
       passwordReset() {
         

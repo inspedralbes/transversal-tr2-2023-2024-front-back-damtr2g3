@@ -102,6 +102,7 @@ app.post("/alumnesClasse", function (req, res) {
 })//passar informacio basica de tots els alumnes d'una classe
 app.post("/veureClasses", function (req, res) {
     classes=bbdd.classesProf(req.body.idProf, connection)
+
     classes=JSON.parse(classes)
     res.json(classes)
 })//retorna totes les classes d'un profesor
@@ -146,13 +147,15 @@ app.post("/alumnesPerAutoritzar", function (req, res){
 })//retorna una llista de tots els alumnes que es volen inscriure a una classe determinada
 app.get("/obtenirClassesRegistre", async function (req, res){
     classes=await bbdd.revisarClasses(connection)
-    console.log(classes)
+    //console.log(classes)
     classes=JSON.parse(classes)
     res.json(classes) 
 })//envia un llistat de totes les classes per facilitar el registre d'un nou alumne
 app.post("/obtenirDadesAlumneVue", function (req, res){
     alumne=req.body.username
+    console.log(alumne)
     dades=bbdd.recollirStatsAlumne(alumne)
+    console.log(dades)
     res.json(dades)
 })//envia estadistiques a vue per generar grafics
 app.post("/obtenirStatsTextualsAlumne", function (req, res){
@@ -188,11 +191,44 @@ app.post("/obtenirStatsTextualsAlumne", function (req, res){
     res.json(dadesTextuals)
 })//transforma diferents dades del json en estadstiques legibles per un usuari
 app.post("/colorsGacha", function(req, res){
+    console.log("/colorsGacha")
     alumne=req.body.alumne
     data=bbdd.recollirColors(alumne)
+    console.log(data)
     res.json(data.backgroud)
 })//recolleix tota a info del gacha del usuari i retorna els colors de fons de pantalla
+app.post("/obtenirStatsTextualsClasse", function (req, res){
+    clase=req.body.classe
+    dadesTextuals={
+        millor:"",
+        pitjor:"",
+        avgPuntuacio:""
+    }
+    dades=bbdd.recollirStatsAlumne(alumne)
 
+    //sumar totes les puntuacions i calcular la mitjana
+    let puntuacioTotal = 0
+    for(var i=0; i<dades.puntuacio.length; i++){
+        puntuacioTotal+=dades.puntuacio[i]
+    }
+    dadesTextuals=puntuacioTotal/dades.puntuacio.length
+
+    //parsejem les dades en un json auxiliar i el ordenem per ordre
+    jsonAuxiliar=[{
+        tema:"",
+        nota:0
+    }]
+    for(let i=0; i<dades.stats.length;i++){
+        jsonAuxiliar[i].tema=dades.stats[i].tema
+        jsonAuxiliar[i].nota=dades.stats[i].acerts/dades.stats[i].errors
+    }
+    jsonAuxiliar = jsonAuxiliar.sort((a, b) =>  a.nota.localeCompare(b.nota));
+    dadesTextuals.millor=jsonAuxiliar[0].tema
+    dadesTextuals.pitjor=jsonAuxiliar[jsonAuxiliar.length-1].tema
+
+
+    res.json(dadesTextuals)
+})//transforma diferents dades del json en estadstiques legibles per un usuari
 //------------------cridar aquestes funcions al acabar una partida
 function generarGraficsAlumne(alumneDesitjat){ 
     alumne=alumneDesitjat

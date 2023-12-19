@@ -14,21 +14,22 @@
 </template>
 <script>
 
-import { obtenirStats } from './communicationsManager';
+import { obtenirStats } from '@/CommunicationsManager';
+import { useAppStore } from '../store/app';
 import { Bar } from 'vue-chartjs'
 export default {
-    name: 'GestioEstaditiques',
+    //name: 'GestioEstaditiques',
     data() {
         return {
-            data: {},
+            Stats: [{}],
             grafiques:[],
             chartData: {
-                labels: [ data.stats.tema ],
-                datasets: [ data.stats.correcte / data.stats.incorrecte  ]
+                labels: [ Stats[0].stats.tema ],
+                datasets: [ Stats[0].stats.correcte / Stats[0].stats.incorrecte  ]
             },
             chartData2: {
                 labels: ["Puntuacio" ],
-                datasets: [ data.puntuacio  ]
+                datasets: [ Stats.puntuacio  ]
             },
             chartOptions: {
                 responsive: true
@@ -40,8 +41,9 @@ export default {
         generarGrafics(){}
     },
     created() {
+        console.log("on created")
         obtenirStats(this.StoredUsername).then(response => {
-            this.data = response            
+            this.Stats = response            
         });
 
     },
