@@ -243,5 +243,37 @@ async function increaseScore(lobby_code, player_name, amount) {
   });
 }
 
+async function addAnswerData(lobby_code, player_name, answer_data) {
+  return new Promise((resolve, reject) => {
+    lobbies.updateOne(
+      { lobby_code: lobby_code, "players.name": player_name },
+      { $push: { "players.$.answers": answer_data } }
+    )
+      .then(result => {
+        resolve();
+      })
+      .catch(err => {
+        console.error(err);
+        reject(err);
+      });
+  });
+}
+
+async function playerFinished(lobby_code, player_name) {
+  return new Promise((resolve, reject) => {
+    lobbies.updateOne(
+      { lobby_code: lobby_code, "players.name": player_name },
+      { $set: { "players.$.status": finished } }
+    )
+      .then(result => {
+        resolve();
+      })
+      .catch(err => {
+        console.error(err);
+        reject(err);
+      });
+  });
+}
+
 module.exports = { client, connectToDb, insertLobby, getLobbies, lobbyExists, addPlayerToLobby, isPlayerNameAvailable, isLobbyFull, isThereAnyLobby, deleteLobby, 
-  findLobby, playerReady, checkAllReady, leaveLobby, getPlayersByLobbyCode, increaseScore };
+  findLobby, playerReady, checkAllReady, leaveLobby, getPlayersByLobbyCode, increaseScore, addAnswerData, playerFinished };

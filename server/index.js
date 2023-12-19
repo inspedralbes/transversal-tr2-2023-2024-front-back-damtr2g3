@@ -271,6 +271,29 @@ lobbies_mongo.connectToDb()
           });
         }
       });
+
+      socket.on("question answered", data => {
+        console.log(data);
+        lobbies_mongo.updateScore(data.lobby_code, data.name, data.score).then((result) => {
+          sendPlayerList(socket);
+        });
+      });
+
+      socket.on("answer data", data => {
+        lobbies_mongo.addAnswerData(data.lobby_code, data.name, data.answerData).then((result) => {
+          console.log("Answer data added");
+        });
+      });
+
+      socket.on("questions ended", data => {
+        lobbies_mongo.playerFinished(data.lobby_code, data.name).then((result) => {
+          lobbies_mongo.checkAllFinished(data.lobby_code).then((result) => {
+            if (result) {
+              io.to(socket.data.lobby_code).emit("end game");
+            }
+          });
+        });
+      });
     
       socket.on("disconnect", () => {
         if(lobbies_mongo.lobbyExists(socket.data.current_lobby)){
