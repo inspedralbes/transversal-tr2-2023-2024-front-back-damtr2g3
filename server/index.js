@@ -7,7 +7,7 @@ const { MongoClient, ServerApiVersion, ObjectId, UUID } = require("mongodb");
 const app = express();
 const server = http.createServer(app);
 const { v4: uuidv4 } = require("uuid");
-const { Console } = require("console");
+const { Console, log, trace } = require("console");
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -137,31 +137,6 @@ io.on("connection", (socket) => {
     // console.log(lobbies);
   });
 
-  socket.on("ready user", () => {
-    let readyUsers = 0;
-
-    lobbies.forEach((lobby) => {
-      if (lobby.lobby_code === socket.data.lobby_code) {
-        lobby.players.forEach((player) => {
-          if (player.name === socket.data.name) {
-            player.ready = true;
-          }
-        });
-        lobby.players.forEach((player) => {
-          if (player.ready) {
-            readyUsers++;
-          }
-        });
-        if (readyUsers == lobby.players.length) {
-          io.to(socket.data.lobby_code).emit("start countdown");
-          setTimeout(() => {
-            io.to(socket.data.lobby_code).emit("start game");
-          }, 5000);
-        }
-      }
-    });
-  });
-
   socket.on("leave lobby", () => {
     let lobby = lobbies.find(
       (lobby) => lobby.lobby_code == socket.data.current_lobby
@@ -189,11 +164,14 @@ io.on("connection", (socket) => {
   socket.on("player ready", (player) => {
     let readyUsers = 0;
 
+    // console.log(player);
+
     lobbies.forEach((lobby) => {
-      if (lobby.lobby_code === socket.data.current_lobby) {
+      if (lobby.lobby_code == socket.data.current_lobby) {
         lobby.players.forEach((player) => {
           if (player.name === socket.data.name) {
             player.ready = true;
+            console.log(readyUsers + " / " + lobby.players.length);
           }
         });
         lobby.players.forEach((player) => {
@@ -202,6 +180,7 @@ io.on("connection", (socket) => {
           }
         });
         if (readyUsers === lobby.players.length) {
+          console.log("ALL PLAYERS READY");
           io.to(socket.data.current_lobby).emit("player list", lobby.players);
           io.to(socket.data.current_lobby).emit("start game");
         } else {
