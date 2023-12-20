@@ -170,7 +170,7 @@ async function playerReady(current_lobby_code, current_player_name) {
   return new Promise((resolve, reject) => {
     lobbies.updateOne(
       { lobby_code: current_lobby_code, "players.name": current_player_name },
-      { $set: { "players.$.ready": true } }
+      { $set: { "players.$.ready": true, "players.$.status": "ready"} }
     )
       .then(result => {
         resolve();
@@ -182,11 +182,38 @@ async function playerReady(current_lobby_code, current_player_name) {
   });
 }
 
+function setAllPlaying(current_lobby_code) {
+  return new Promise((resolve, reject) => {
+    lobbies.findOne({ lobby_code: current_lobby_code })
+      .then(lobby => {
+        if (!lobby) throw new Error('Lobby not found');
+
+        lobby.players = lobby.players.map(player => {
+          player.status = 'playing';
+          return player;
+        });
+
+        return lobbies.updateOne(
+          { lobby_code: current_lobby_code },
+          { $set: { players: lobby.players } }
+        );
+      })
+      .then(result => {
+        resolve(result);
+      })
+      .catch(err => {
+        console.error(err);
+        reject(err);
+      });
+  });
+}
+
+
 async function checkAllReady(current_lobby_code) {
   return new Promise((resolve, reject) => {
     lobbies.findOne({ lobby_code: current_lobby_code })
       .then(result => {
-        console.log(result);
+        //console.log(result);
         if (result.players.every((player) => player.ready)) {
           resolve(true);
         } else {
@@ -265,6 +292,7 @@ async function checkAllFinished(lobby_code) {
   return new Promise((resolve, reject) => {
     lobbies.findOne({ lobby_code: lobby_code })
       .then(result => {
+        console.log(result);
         if (result.players.every((player) => player.status === "finished")) {
           resolve(true);
         } else {
@@ -279,4 +307,4 @@ async function checkAllFinished(lobby_code) {
 }
 
 module.exports = { client, dbName, connectToDb, insertLobby, getLobbies, lobbyExists, addPlayerToLobby, isPlayerNameAvailable, isLobbyFull, isThereAnyLobby, deleteLobby, 
-  findLobby, playerReady, checkAllReady, leaveLobby, getPlayersByLobbyCode, increaseScore, playerFinished, checkAllFinished };
+  findLobby, playerReady, checkAllReady, leaveLobby, getPlayersByLobbyCode, increaseScore, playerFinished, checkAllFinished, setAllPlaying };

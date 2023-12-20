@@ -21,6 +21,7 @@ const stats_mongo = require("./stats_mongo.js");
 const { join } = require("path");
 const { connect } = require("http2");
 const { stat } = require("fs");
+const { send } = require("process");
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -257,9 +258,21 @@ lobbies_mongo.connectToDb()
 
       socket.on("player ready", (player) => {
         lobbies_mongo.playerReady(player.lobby_code, player.name).then((result) => {
+          let data = {
+            lobbyId: player.lobby_code,
+            playerName: player.name,
+          }
+          io.emit("status ready", data);
           lobbies_mongo.checkAllReady(player.lobby_code).then((result) => {
             if (result) {
               sendPlayerList(socket);
+              let dataReady = {
+                lobbyId: player.lobby_code,
+              }
+              io.emit("all ready", dataReady);
+              lobbies_mongo.setAllPlaying(player.lobby_code).then((result) => {
+                sendPlayerList(socket);
+              });
               io.to(socket.data.current_lobby).emit("start game");
               io.to(socket.data.lobby_code).emit("start countdown");
               setTimeout(() => {
@@ -273,7 +286,7 @@ lobbies_mongo.connectToDb()
       });
     
     socket.on("end game", (data) => {
-      console.log(data);
+      //console.log(data);
       lobbies_mongo.deleteLobby(data).then((result) => {
         sendLobbyList();
       });
@@ -307,10 +320,17 @@ lobbies_mongo.connectToDb()
       });
 
       socket.on("question answered", data => {
-        console.log(data);
-        lobbies_mongo.increaseScore(data.lobby_code, data.name, data.score).then((result) => {
-          sendPlayerList(socket);
-        });
+        if(data.correcta){
+          let increaseData = {
+            lobbyId: socket.data.current_lobby,
+            playerName: socket.data.name,
+            incrementAmount: 10
+          }
+          io.emit("increment score", increaseData);
+          lobbies_mongo.increaseScore(socket.data.current_lobby, socket.data.name, 10).then((result) => {
+            sendPlayerList(socket);
+          });
+        }
       });
 
       socket.on("answer data", data => {
@@ -320,10 +340,16 @@ lobbies_mongo.connectToDb()
       });
 
       socket.on("questions ended", data => {
-        lobbies_mongo.playerFinished(data.lobby_code, data.name).then((result) => {
-          lobbies_mongo.checkAllFinished(data.lobby_code).then((result) => {
+        lobbies_mongo.playerFinished(socket.data.current_lobby, socket.data.name).then((result) => {
+          let info = {
+            playerName: socket.data.name,
+            lobbyId: socket.data.current_lobby,
+          }
+          io.emit("player finished", info);
+          lobbies_mongo.checkAllFinished(socket.data.current_lobby).then((result) => {
             if (result) {
-              io.to(socket.data.lobby_code).emit("end game");
+              io.to(socket.data.current_lobby).emit("end game");
+              console.log("Game ended");
             }
           });
         });
