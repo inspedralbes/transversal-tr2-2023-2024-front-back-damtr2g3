@@ -100,9 +100,10 @@ app.post("/alumnesClasse", function (req, res) {
     alumnes=JSON.parse(alumnes)
     res.json(alumnes)
 })//passar informacio basica de tots els alumnes d'una classe
-app.post("/veureClasses", function (req, res) {
-    classes=bbdd.classesProf(req.body.idProf, connection)
-
+app.post("/veureClasses", async function (req, res) {
+    console.log("recollint dades");
+    classes= await bbdd.classesProf(req.body.idProf, connection)
+    console.log(classes)
     classes=JSON.parse(classes)
     res.json(classes)
 })//retorna totes les classes d'un profesor
