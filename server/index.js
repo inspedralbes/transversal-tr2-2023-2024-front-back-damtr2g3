@@ -7,7 +7,7 @@ const { MongoClient, ServerApiVersion, ObjectId, UUID } = require("mongodb");
 const app = express();
 const server = http.createServer(app);
 const { v4: uuidv4 } = require("uuid");
-const { Console } = require("console");
+const { Console, log, trace } = require("console");
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -101,7 +101,7 @@ app.post("/insertPregunta", async (req, res) => {
 app.delete("/deletePregunta/:id", async (req, res) => {
   preguntes_mongo.deletePregunta(req.params.id).then((result) => {
     res.send(result);
-    //console.log("La pregunta ha sigut eliminada")
+    console.log("La pregunta ha sigut eliminada")
   });
 });
 
@@ -286,7 +286,6 @@ lobbies_mongo.connectToDb()
       });
     
     socket.on("end game", (data) => {
-      //console.log(data);
       lobbies_mongo.deleteLobby(data).then((result) => {
         sendLobbyList();
       });

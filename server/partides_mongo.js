@@ -153,6 +153,7 @@ async function isThereAnyLobby() {
 }
 
 async function deleteLobby(lobby_code) {
+  console.log(lobby_code);
   console.log("Deleting lobby: " + lobby_code);
   return new Promise((resolve, reject) => {
     lobbies.deleteOne({ lobby_code: lobby_code })
@@ -231,7 +232,7 @@ async function leaveLobby(current_lobby_code, current_player_name) {
   return new Promise((resolve, reject) => {
     lobbies.updateOne(
       { lobby_code: current_lobby_code },
-      { $pull: { players: { name: current_player_name } } }
+      { $pull: { players: { name: current_player_name, status: { $ne: "finished" } } } }
     )
       .then(result => {
         resolve();
