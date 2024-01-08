@@ -3,22 +3,27 @@
 </template>
 
 <script >
- /* import { useAppStore } from './store/app';
-
+  import { useAppStore } from './store/app';
     export default {
-        setup() {
+      data(){
+        return{
+          myStyle:{
+              backgroundColor:"#00FFFF"
+              }
+      }},
+      
+      setup() {
             const store = useAppStore()
-            let back = store.fonsDePantalla.background
+            let back = store.fonsDePantalla
             return{
                 back
             }
         }
-    }*/
+    }
 </script>
 
 <style>
 body{
-  background: url(./assets/tallgrass.png);
-  
+  background-color:#00FFFF;
 }
 </style>

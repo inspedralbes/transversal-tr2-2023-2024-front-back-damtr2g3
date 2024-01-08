@@ -21,8 +21,9 @@ export const useAppStore = defineStore('app', {
       imatge: 'https://cdn.pixabay.com/photo/2016/03/31/19/58/avatar-1295429_960_720.png',
       enemyLife: 100,
       maxLife: 100,
-    },
-    //fonsDePantalla:background,
+    },              
+    fonsDePantalla:"#00FFFF"
+    ,
   }),
   actions: {
     setLoginInfo({ loggedIn, username, image }) {
@@ -43,6 +44,5 @@ export const useAppStore = defineStore('app', {
       this.loggedIn=true;
       this.username=username
     },
-
   },
 });

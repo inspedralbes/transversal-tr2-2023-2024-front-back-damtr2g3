@@ -14,7 +14,7 @@ const dbName = "G3-Proj2";
 //	idPartida	idClasse	idAlumne	idProfesor	capacitat	puntuacio	tema
 module.exports={obtenirPreguntes, login, ObtenirInfoUsuari, CambiarContrasena, loginProf, dadesAlumnesClasse, classesProf,
      crearAlumne, validarUsuari, eliminarUsuari, ObtenirInscrits, revisarClasses, preguntaContestada, recollirStatsAlumne,
-      recollirStatsClasse, recollirStatsPregunta, recollirColors}
+    recollirStatsClasse, recollirStatsPregunta, recollirColors}
 
 async function obtenirPreguntes(numPreguntes){
     await client.connect();
@@ -133,7 +133,7 @@ async function eliminarUsuari(id, connection){
 }//elimina el usuari designat
 async function ObtenirInscrits(classe, connection) {
     try {
-        const [rows, fields] = await connection.execute('SELECT Nom, username, correu FROM alumnes  WHERE classe='+"'"+classe+"'"+" AND autoritzada=false");
+        const [rows, fields] = await connection.execute('SELECT Nom, username, idAlum, correu FROM alumnes  WHERE classe='+"'"+classe+"'"+" AND autoritzada=false");
         const usuariosJSON = JSON.stringify(rows);
         return usuariosJSON;
     } catch (error) {

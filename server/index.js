@@ -96,7 +96,7 @@ app.post("/restablirPasswd", function(req, res){
     bbdd.restablirContrasenya(usuariActualitzat, novaContrasenya, connection)
 })//cambiar la contrasenya existent per una de nova
 app.post("/alumnesClasse",async function (req, res) {
-    alumnes= await bbdd.dadesAlumnesClasse(req.body.classe, connection)
+    alumnes= await bbdd.dadesAlumnesClasse(req.body.id, connection)
     alumnes=JSON.parse(alumnes)
     res.json(alumnes)
 })//passar informacio basica de tots els alumnes d'una classe
@@ -120,6 +120,7 @@ app.post("/registrarUsuari", function (req, res) {
 
 })//recull les dades i crea un nou usuari
 app.post("/autoritzarAlumnes", function(req, res){
+    //autoritzacio=boolean, id=idAlumne; username=username alumne
     autoritzacio=req.body.autoritzacio
     if(autoritzacio){
         textCorreu="Hola "+req.body.username+" ens alegra comunicarte que el teu professor a acceptat la teva inscripció al curs, ja pots accedir a "+web
@@ -142,7 +143,7 @@ app.post("/autoritzarAlumnes", function(req, res){
     
 })//informa al usuari de si ha sigut acceptat o no al sistema i fa els cambis corresponents a la bbdd
 app.post("/alumnesPerAutoritzar", function (req, res){
-    alumnes=bbdd.ObtenirInscrits(req.body.classe, connection)
+    alumnes=bbdd.ObtenirInscrits(req.body.id, connection)
     alumnes=JSON.parse(alumnes)
     res.json(alumnes)
 })//retorna una llista de tots els alumnes que es volen inscriure a una classe determinada

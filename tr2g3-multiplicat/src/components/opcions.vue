@@ -43,7 +43,8 @@
                 }
             },
             cambiarColor(){
-                //this.store.fonsDePantalla.background=this.color
+                
+                this.store.fonsDePantalla=this.color
             }
 
         },
