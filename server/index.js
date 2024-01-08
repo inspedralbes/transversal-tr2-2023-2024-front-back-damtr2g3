@@ -142,9 +142,11 @@ app.post("/autoritzarAlumnes", function(req, res){
     });
     
 })//informa al usuari de si ha sigut acceptat o no al sistema i fa els cambis corresponents a la bbdd
-app.post("/alumnesPerAutoritzar", function (req, res){
-    alumnes=bbdd.ObtenirInscrits(req.body.id, connection)
+app.post("/alumnesPerAutoritzar", async function (req, res){
+    console.log(req.body)
+    alumnes=await bbdd.ObtenirInscrits(req.body.curs, connection)
     alumnes=JSON.parse(alumnes)
+    console.log(alumnes)
     res.json(alumnes)
 })//retorna una llista de tots els alumnes que es volen inscriure a una classe determinada
 app.get("/obtenirClassesRegistre", async function (req, res){
