@@ -122,14 +122,15 @@ app.post("/registrarUsuari", function (req, res) {
 app.post("/autoritzarAlumnes", function(req, res){
     //autoritzacio=boolean, id=idAlumne; username=username alumne
     autoritzacio=req.body.autoritzacio
+    console.log(req.body)
     if(autoritzacio){
-        textCorreu="Hola "+req.body.username+" ens alegra comunicarte que el teu professor a acceptat la teva inscripció al curs, ja pots accedir a "+web
+        textCorreu="Hola "+req.body.username+" ens alegra comunicarte que el teu professor a acceptat la teva inscripció al curs, ja pots accedir a "/*+web*/
         +" per poder gaudir mentres aprens"
-        bbdd.validarUsuari(req.body.id, connection)
+        bbdd.validarUsuari(req.body.idAlum, connection)
     }
     else{
         textCorreu="Hola "+req.body.username+" sembla ser que el teu professor a denegat l'inscripció al nostre servei, si creus que ha sigut un error pots comunicarte amb ell i tornar a intentar-ho"
-        bbdd.eliminarUsuari(req.body.id, connection)
+        bbdd.eliminarUsuari(req.body.idAlum, connection)
     }
     var mailOptions = {
         from: 'matesmonoficial@gmail.com',
