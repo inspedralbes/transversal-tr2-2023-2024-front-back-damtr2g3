@@ -15,9 +15,9 @@
         <div class="grid">
             <div class="player" v-for="player in store.players" :key="player.name">
                 <span :class="{ 'user-name': player.name === username }">{{ player.name }}</span>
-                <button v-if="!player.ready" @click="markReady(player)"
+                <button v-if="!player.ready && player.name === username" @click="markReady(player)"
                     class="ready-button ready-button-not-ready">Ready</button>
-                <button v-else class="ready-button ready-button-ready" disabled>Ready</button>
+                <button v-else-if="player.ready && player.name === username" class="ready-button ready-button-ready" disabled>Ready</button>
             </div>
         </div>
     </div>
@@ -26,7 +26,6 @@
 <script>
 import { useAppStore } from "../store/app";
 import { socket } from "@/services/socket";
-import { ref } from 'vue';
 import { useRouter } from 'vue-router'
 import { v4 as uuidv4 } from 'uuid';
 
@@ -67,7 +66,7 @@ export default {
             if (this.username && this.lobbyCode) {
                 const data = {
                     name: this.username,
-                    lobby_code: this.lobbyCode.toString(),
+                    lobby_code: this.lobbyCode.toString().padStart(5, "0"),
                     playerID: uuidv4()
                 };
                 socket.emit("join lobby", data);
@@ -89,7 +88,9 @@ export default {
 
 
         leaveLobby() {
+            this.store.players = this.store.players.filter((player) => player.name !== this.username);
             socket.emit("leave lobby");
+            console.log("leaving lobby");
         },
 
         markReady(player) {

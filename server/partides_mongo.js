@@ -157,7 +157,7 @@ async function deleteLobby(lobby_code) {
   console.log("Deleting lobby: " + lobby_code);
   return new Promise((resolve, reject) => {
     lobbies.deleteOne({ lobby_code: lobby_code })
-      .then(result => {
+      .then(() => {
         resolve();
       })
       .catch(err => {
@@ -214,7 +214,6 @@ async function checkAllReady(current_lobby_code) {
   return new Promise((resolve, reject) => {
     lobbies.findOne({ lobby_code: current_lobby_code })
       .then(result => {
-        //console.log(result);
         if (result.players.every((player) => player.ready)) {
           resolve(true);
         } else {

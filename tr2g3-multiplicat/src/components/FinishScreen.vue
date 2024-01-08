@@ -15,9 +15,9 @@
 </template>
 
 <script>
+import { onMounted } from 'vue';
 import { useAppStore } from '../store/app';
 import { ref, watchEffect } from 'vue';
-import { socket } from '@/services/socket';
 
 export default {
     name: 'FinishScreen',
@@ -25,6 +25,13 @@ export default {
     setup() {
         const store = useAppStore();
         const players = ref([]);
+
+        onMounted(() => {
+            let storedPlayers = localStorage.getItem('players');
+            if (storedPlayers) {
+                store.players = JSON.parse(storedPlayers);
+            }
+        });
 
         watchEffect(() => {
             players.value = store.players.sort((a, b) => b.score - a.score);;
