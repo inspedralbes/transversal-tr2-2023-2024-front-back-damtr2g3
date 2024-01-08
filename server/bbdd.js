@@ -113,7 +113,7 @@ async function crearAlumne(alumne, connection){
 }//insereix un alumne sense validar a la bbdd
 async function validarUsuari(id, connection){
     try {
-        const [rows, fields] = await connection.execute('UPDATE alumnes WHERE idAlum='+id+" Set autoritzada = true");
+        const [rows, fields] = await connection.execute('UPDATE alumnes Set autoritzada = true WHERE idAlum='+id);
         const usuariosJSON = JSON.stringify(rows);
         return usuariosJSON;
     } catch (error) {
