@@ -95,8 +95,8 @@ app.post("/restablirPasswd", function(req, res){
     novaContrasenya=req.body.passwd
     bbdd.restablirContrasenya(usuariActualitzat, novaContrasenya, connection)
 })//cambiar la contrasenya existent per una de nova
-app.post("/alumnesClasse", function (req, res) {
-    alumnes=bbdd.dadesAlumnesClasse(req.body.classe, connection)
+app.post("/alumnesClasse",async function (req, res) {
+    alumnes= await bbdd.dadesAlumnesClasse(req.body.classe, connection)
     alumnes=JSON.parse(alumnes)
     res.json(alumnes)
 })//passar informacio basica de tots els alumnes d'una classe
