@@ -29,15 +29,6 @@ app.use(cors());
 const uri =
   "mongodb+srv://a22celgariba:5xaChqdY3ei4ukcp@cluster0.2skn7nc.mongodb.net/?retryWrites=true&w=majority";
 
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-    poolSize: 15,
-  },
-});
-
 async function getQuestionsBySubject(subject) {
   try {
     const db = lobbies_mongo.client.db("G3-Proj2");
@@ -61,36 +52,56 @@ preguntes_mongo.connectToPreguntes();
 stats_mongo.connectToStats();
 
 app.get("/getPreguntes", async (req, res) => {
-  preguntes_mongo.getAllPreguntes().then((result) => {
+  try{
+    const result = await preguntes_mongo.getAllPreguntes();
     res.send(result);
-  });
+  } catch (err) {
+    console.error(err);
+    res.status.send({message: "Error al obtenir les preguntes"});
+  }
 });
 
 app.get("/getPregunta/:id", async (req, res) => {
-  preguntes_mongo.getPregunta(req.params.id).then((result) => {
+  try{
+    const result = await preguntes_mongo.getPregunta(req.params.id);
     res.send(result);
-  });
+  } catch (err) {
+    console.error(err);
+    res.status.send({message: "Error al obtenir la pregunta"});
+  }
 });
 
 app.post("/insertPregunta", async (req, res) => {
-  preguntes_mongo.insertPregunta(req.body).then((result) => {
+  try{
+    const result = await preguntes_mongo.insertPregunta(req.body);
     res.send(result);
-    console.log("La pregunta ha sigut insertada");
-  });
+    console.log("La pregunta ha sigut inserida");
+  } catch (err) {
+    console.error(err);
+    res.status.send({message: "Error al inserir la pregunta"});
+  }
 });
 
 app.delete("/deletePregunta/:id", async (req, res) => {
-  preguntes_mongo.deletePregunta(req.params.id).then((result) => {
+  try{
+    const result = await preguntes_mongo.deletePregunta(req.params.id);
     res.send(result);
-    console.log("La pregunta ha sigut eliminada")
-  });
+    console.log("La pregunta ha sigut eliminada");
+  } catch (err) {
+    console.error(err);
+    res.status.send({message: "Error al eliminar la pregunta"});
+  }
 });
 
 app.put("/updatePregunta/:id", async (req, res) => {
-  preguntes_mongo.updatePregunta(req.params.id, req.body).then((result) => {
+  try{
+    const result = await preguntes_mongo.updatePregunta(req.params.id, req.body);
     res.send(result);
     console.log("La pregunta ha sigut actualitzada");
-  });
+  } catch (err) {
+    console.error(err);
+    res.status.send({message: "Error al actualitzar la pregunta"});
+  }
 });
 
 app.get("/getUniqueID", async (req, res) => {
@@ -161,7 +172,7 @@ lobbies_mongo.connectToDb()
                 players: [],
                 maxPlayers: data.max_players,
               };
-              lobbies_mongo.insertLobby(lobby).then((result) => {
+              lobbies_mongo.insertLobby(lobby).then(() => {
                 sendLobbyList();
               });
             });
@@ -221,7 +232,7 @@ lobbies_mongo.connectToDb()
               status: "connected",
               ready: false,
             }
-            lobbies_mongo.addPlayerToLobby(data.lobby_code, player).then((result) => {
+            lobbies_mongo.addPlayerToLobby(data.lobby_code, player).then(() => {
               socket.join(data.lobby_code);
               io.emit("player join", player);
               socket.join(data.lobby_code);
@@ -238,7 +249,7 @@ lobbies_mongo.connectToDb()
       });
 
       socket.on("player ready", (player) => {
-        lobbies_mongo.playerReady(player.lobby_code, player.name).then((result) => {
+        lobbies_mongo.playerReady(player.lobby_code, player.name).then(() => {
           let data = {
             lobbyId: player.lobby_code,
             playerName: player.name,
@@ -251,7 +262,7 @@ lobbies_mongo.connectToDb()
                 lobbyId: player.lobby_code,
               }
               io.emit("all ready", dataReady);
-              lobbies_mongo.setAllPlaying(player.lobby_code).then((result) => {
+              lobbies_mongo.setAllPlaying(player.lobby_code).then(() => {
                 sendPlayerList(socket);
               });
               io.to(socket.data.current_lobby).emit("start game");
@@ -267,13 +278,13 @@ lobbies_mongo.connectToDb()
       });
     
     socket.on("end game", (data) => {
-      lobbies_mongo.deleteLobby(data).then((result) => {
+      lobbies_mongo.deleteLobby(data).then(() => {
         sendLobbyList();
       });
     });
 
     socket.on("remove player", (data) => {
-      lobbies_mongo.leaveLobby(data.lobby_code, data.name).then((result) => {
+      lobbies_mongo.leaveLobby(data.lobby_code, data.name).then(() => {
         sendPlayerList(socket);
         sendLobbyList();
         let info = {
@@ -285,7 +296,7 @@ lobbies_mongo.connectToDb()
     });
       
       socket.on("leave lobby", () => {
-        lobbies_mongo.leaveLobby(socket.data.current_lobby, socket.data.name).then((result) => {
+        lobbies_mongo.leaveLobby(socket.data.current_lobby, socket.data.name).then(() => {
           socket.leave(socket.data.current_lobby);
           sendPlayerList(socket);
           sendLobbyList();
@@ -305,14 +316,14 @@ lobbies_mongo.connectToDb()
             incrementAmount: 10
           }
           io.emit("increment score", increaseData);
-          lobbies_mongo.increaseScore(socket.data.current_lobby, socket.data.name, 10).then((result) => {
+          lobbies_mongo.increaseScore(socket.data.current_lobby, socket.data.name, 10).then(() => {
             sendPlayerList(socket);
           });
         }
       });
 
       socket.on("answer data", data => {
-        stats_mongo.insertStats(data).then((result) => {
+        stats_mongo.insertStats(data).then(() => {
           console.log("Stats inserted");
         });
       });
@@ -337,7 +348,7 @@ lobbies_mongo.connectToDb()
       });
     
       socket.on("disconnect", () => {
-        lobbies_mongo.leaveLobby(socket.data.current_lobby, socket.data.name).then((result) => {
+        lobbies_mongo.leaveLobby(socket.data.current_lobby, socket.data.name).then(() => {
           socket.leave(socket.data.current_lobby);
           sendPlayerList(socket);
           sendLobbyList();
