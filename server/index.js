@@ -15,19 +15,42 @@ const io = new Server(server, {
   },
 });
 
+
 const lobbies_mongo = require("./partides_mongo.js");
 const preguntes_mongo = require("./preguntes_mongo.js");
 const stats_mongo = require("./stats_mongo.js");
+const socketHandler = require("./socketHandler.js");
 const { join } = require("path");
 const { connect } = require("http2");
 const { stat } = require("fs");
 const { send } = require("process");
+const { start } = require("repl");
 
 app.use(bodyParser.json());
 app.use(cors());
 
 const uri =
   "mongodb+srv://a22celgariba:5xaChqdY3ei4ukcp@cluster0.2skn7nc.mongodb.net/?retryWrites=true&w=majority";
+
+const PORT = process.env.PORT || 3333;
+
+async function startServer(){
+  try{
+    await lobbies_mongo.connectToDb();
+    console.log("Connected to partides database")
+    await stats_mongo.connectToStats();
+    console.log("Connected to stats database")
+    await preguntes_mongo.connectToPreguntes();
+    console.log("Connected to preguntes database")
+    server.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+startServer();
 
 async function getQuestionsBySubject(subject) {
   try {
@@ -48,8 +71,6 @@ async function getQuestionsBySubject(subject) {
 
 
 //Gestió de preguntes
-preguntes_mongo.connectToPreguntes();
-stats_mongo.connectToStats();
 
 app.get("/getPreguntes", async (req, res) => {
   try{
@@ -118,252 +139,32 @@ app.get("/getUniqueID", async (req, res) => {
 });
 
 
+main();
+//Gestió de partides amb sockets i mongo
+io.on("connection", async (socket) => {
+  console.log("A user connected");
+  socketHandler.sendLobbyList();
 
-//Gestió de partides amb sockets
-app.get("/incrementScore", (req, res) => {
-  const { lobbyId, playerName, incrementAmount } = req.query;
+  socketHandler.handleGetLobbies(socket);
+  try {
+    const result = await handleGetPlayers(socket);
+    io.to(socket.id).emit(result.type, result.data);
+  } catch (error) {
+    console.log(error);
+  }
+  socketHandler.handleNewLobby(socket);
+  socketHandler.handleJoinLobby(socket);
+  socketHandler.handlePlayerReady(socket);
+  socketHandler.handleEndGame(socket);
+  socketHandler.handleRemovePlayer(socket);
+  socketHandler.handleLeaveLobby(socket);
+  socketHandler.handleQuestionAnswered(socket);
+  socketHandler.handleAnswerData(socket);
+  socketHandler.handleQuestionsEnded(socket);
+  socketHandler.handleDisconnect(socket);
 
-  io.emit("increment score", { lobbyId, playerName, incrementAmount });
-  lobbies_mongo.increaseScore(lobbyId, playerName, parseInt(incrementAmount));
-  res.send("Score incremented");
 });
 
-
-const PORT = process.env.PORT || 3333;
-
-lobbies_mongo.connectToDb()
-  .then(() => {
-    console.log("Connected to database");
-    server.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
-    });
-    io.on("connection", (socket) => {
-      console.log("A user connected");
-      sendLobbyList();
-    
-      socket.on("get lobbies", () => {
-        sendLobbyList();
-      });
-    
-      socket.on("get players", (data) => {
-        lobbies_mongo.getPlayersByLobbyCode(data).then((result) => {
-          let jugadors = result;
-          if(jugadors!=null){
-            io.to(socket.id).emit("players list", JSON.stringify(jugadors));
-          } else {
-            io.to(socket.id).emit("players error");
-          }
-        });
-      });
-    
-      socket.on("newLobby", (data) => {
-        lobbies_mongo.lobbyExists(data.lobby_code).then((result) => {
-          let lobby_exists = result;
-          if (!lobby_exists) {
-            console.log("New lobby created");
-            let questions;
-            getQuestionsBySubject(data.subject).then((result) => {
-              questions = result;
-              let lobby = {
-                lobby_code: data.lobby_code,
-                subject: data.subject,
-                questions: questions,
-                date: new Date().getTime(),
-                players: [],
-                maxPlayers: data.max_players,
-              };
-              lobbies_mongo.insertLobby(lobby).then(() => {
-                sendLobbyList();
-              });
-            });
-          } else {
-            io.to(socket.id).emit("Lobby exists", data);
-          }
-        });
-      });
-    
-      socket.on("join lobby", (data) => {
-        let connectionError = false;
-        console.log("joining lobby");
-
-        lobbies_mongo.isThereAnyLobby().then((isLobby) => {
-          if (!isLobby) {
-            connectionError = true;
-            io.to(socket.id).emit("connection error", {
-              errorMsg: "No lobbies found",
-            });
-            throw new Error("No lobbies found");
-          } else {
-            return lobbies_mongo.lobbyExists(data.lobby_code);
-          }
-        }).then((doesLobbyExist) => {
-          if (!doesLobbyExist) {
-            connectionError = true;
-            io.to(socket.id).emit("connection error", {
-              errorMsg: "Lobby not found",
-            });
-            throw new Error("Lobby not found");
-          } else {
-            return Promise.all([
-              lobbies_mongo.isLobbyFull(data.lobby_code),
-              lobbies_mongo.isPlayerNameAvailable(data.lobby_code, data.name)
-            ]);
-          }
-        }).then(([isFull, isNameAvailable]) => {
-          if (isFull) {
-            connectionError = true;
-            io.to(socket.id).emit("connection error", {
-              errorMsg: "Lobby is full",
-            });
-            throw new Error("Lobby is full");
-          }
-          if (!isNameAvailable) {
-            connectionError = true;
-            io.to(socket.id).emit("connection error", {
-              errorMsg: "Name not available",
-            });
-            throw new Error("Name not available");
-          }
-          if (!connectionError) {
-            let player = {
-              lobby_code: data.lobby_code,
-              name: data.name,
-              score: 0,
-              status: "connected",
-              ready: false,
-            }
-            lobbies_mongo.addPlayerToLobby(data.lobby_code, player).then(() => {
-              socket.join(data.lobby_code);
-              io.emit("player join", player);
-              socket.join(data.lobby_code);
-              socket.data.current_lobby = data.lobby_code;
-              socket.data.name = data.name;
-              sendLobbyList();
-              sendPlayerList(socket);
-              sendQuestions(socket);
-            });
-          }
-        }).catch((error) => {
-          console.error(error);
-        });
-      });
-
-      socket.on("player ready", (player) => {
-        lobbies_mongo.playerReady(player.lobby_code, player.name).then(() => {
-          let data = {
-            lobbyId: player.lobby_code,
-            playerName: player.name,
-          }
-          io.emit("status ready", data);
-          lobbies_mongo.checkAllReady(player.lobby_code).then((result) => {
-            if (result) {
-              sendPlayerList(socket);
-              let dataReady = {
-                lobbyId: player.lobby_code,
-              }
-              io.emit("all ready", dataReady);
-              lobbies_mongo.setAllPlaying(player.lobby_code).then(() => {
-                sendPlayerList(socket);
-              });
-              io.to(socket.data.current_lobby).emit("start game");
-              io.to(socket.data.lobby_code).emit("start countdown");
-              setTimeout(() => {
-                io.to(socket.data.lobby_code).emit("start game");
-              }, 5000);
-            } else {
-              sendPlayerList(socket);
-            }
-          });
-        });
-      });
-    
-    socket.on("end game", (data) => {
-      lobbies_mongo.deleteLobby(data).then(() => {
-        sendLobbyList();
-      });
-    });
-
-    socket.on("remove player", (data) => {
-      lobbies_mongo.leaveLobby(data.lobby_code, data.name).then(() => {
-        sendPlayerList(socket);
-        sendLobbyList();
-        let info = {
-          name: data.name,
-          lobby: data.lobby_code,
-        }
-        io.emit("player leave", info);
-      });
-    });
-      
-      socket.on("leave lobby", () => {
-        lobbies_mongo.leaveLobby(socket.data.current_lobby, socket.data.name).then(() => {
-          socket.leave(socket.data.current_lobby);
-          sendPlayerList(socket);
-          sendLobbyList();
-          let info = {
-            name: socket.data.name,
-            lobby: socket.data.current_lobby,
-          }
-          io.emit("player leave", info);
-        });
-      });
-
-      socket.on("question answered", data => {
-        if(data.correcta){
-          let increaseData = {
-            lobbyId: socket.data.current_lobby,
-            playerName: socket.data.name,
-            incrementAmount: 10
-          }
-          io.emit("increment score", increaseData);
-          lobbies_mongo.increaseScore(socket.data.current_lobby, socket.data.name, 10).then(() => {
-            sendPlayerList(socket);
-          });
-        }
-      });
-
-      socket.on("answer data", data => {
-        stats_mongo.insertStats(data).then(() => {
-          console.log("Stats inserted");
-        });
-      });
-
-      socket.on("questions ended", data => {
-        lobbies_mongo.playerFinished(socket.data.current_lobby, socket.data.name).then(() => {
-          let info = {
-            playerName: socket.data.name,
-            lobbyId: socket.data.current_lobby,
-          }
-          io.emit("player finished", info);
-          lobbies_mongo.checkAllFinished(socket.data.current_lobby).then((result) => {
-            if (result) {
-              io.to(socket.data.current_lobby).emit("end game");
-              lobbies_mongo.deleteLobby(socket.data.current_lobby).then(() => {
-                sendLobbyList();
-              });
-              console.log("Game ended");
-            }
-          });
-        });
-      });
-    
-      socket.on("disconnect", () => {
-        lobbies_mongo.leaveLobby(socket.data.current_lobby, socket.data.name).then(() => {
-          socket.leave(socket.data.current_lobby);
-          sendPlayerList(socket);
-          sendLobbyList();
-          let info = {
-            name: socket.data.name,
-            lobby: socket.data.current_lobby,
-          }
-          io.emit("player leave", info);
-        });
-      });
-    });   
-  })
-  .catch((err) => {
-    console.error(err);
-  });
 
 function sendPlayerList(socket) {
   lobbies_mongo.findLobby(socket.data.current_lobby).then((result) => {
@@ -384,12 +185,7 @@ function sendQuestions(socket) {
       );
     }
   });
-  
 }
 
-function sendLobbyList() {
-  lobbies_mongo.getLobbies().then((lobbies) => {
-    io.emit("lobbies list", JSON.stringify(lobbies));
-  });
-}
+
 
