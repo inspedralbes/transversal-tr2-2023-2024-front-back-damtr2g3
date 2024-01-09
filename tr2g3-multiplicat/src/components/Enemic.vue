@@ -6,7 +6,7 @@
         <v-progress-linear height="20" color="green" bg-color="red" :model-value="currentLife / maxLife * 100">
           <span>{{ currentLife }} / {{ maxLife }}</span>
         </v-progress-linear>
-        <v-img :src="enemyImage" alt="Enemy Image" height="200">
+        <v-img :class="{ 'hit-animation': store.enemic.isHit, 'dodge-animation': store.enemic.isDodging }" :src="enemyImage" alt="Enemy Image" height="200">
         </v-img>
       </div>
     </v-card-text>
@@ -33,10 +33,31 @@ export default {
       currentLife,
       maxLife,
       enemyImage,
+      store,
     };
   }
 }
 
 </script>
 
-<style scoped></style>
+<style scoped>
+.hit-animation {
+    animation: hit 1s infinite alternate;
+}
+
+@keyframes hit {
+    0%, 20%, 40%, 60%, 80%, 100% { opacity: 1; }
+    10%, 30%, 50%, 70%, 90% { opacity: 0; }
+}
+
+.dodge-animation {
+    animation: dodge 0.7s ease-in-out;
+}
+
+@keyframes dodge {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(-100px); }
+    100% { transform: translateX(0); }
+}
+
+</style>
