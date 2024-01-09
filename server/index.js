@@ -7,7 +7,7 @@ const { MongoClient, ServerApiVersion, ObjectId, UUID } = require("mongodb");
 const app = express();
 const server = http.createServer(app);
 const { v4: uuidv4 } = require("uuid");
-const { Console } = require("console");
+const { Console, log, trace } = require("console");
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -38,40 +38,21 @@ const client = new MongoClient(uri, {
   },
 });
 
-function getQuestions() {
-  return new Promise(async (resolve, reject) => {
-    try {
-      await client.connect();
-      const db = client.db("G3-Proj2");
-      const collection = db.collection("preguntas");
-      const questions = collection
-        .aggregate([{ $sample: { size: 10 } }])
-        .toArray();
-      resolve(questions);
-    } catch (err) {
-      console.error(err);
-      reject(err);
-    }
-  });
-}
-
-function getQuestions(subject) {
-  return new Promise(async (resolve, reject) => {
-    try {;
-      const db = lobbies_mongo.client.db("G3-Proj2");
-      const collection = db.collection("preguntas");
-      const questions = collection
-        .aggregate([
-          { $match: { subject: subject } },
-          { $sample: { size: 10 } }
-        ])
-        .toArray();
-      resolve(questions);
-    } catch (err) {
-      console.error(err);
-      reject(err);
-    }
-  });
+async function getQuestionsBySubject(subject) {
+  try {
+    const db = lobbies_mongo.client.db("G3-Proj2");
+    const collection = db.collection("preguntas");
+    const questions = await collection
+      .aggregate([
+        { $match: { subject: subject } },
+        { $sample: { size: 10 } }
+      ])
+      .toArray();
+    return questions;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 }
 
 
@@ -101,7 +82,7 @@ app.post("/insertPregunta", async (req, res) => {
 app.delete("/deletePregunta/:id", async (req, res) => {
   preguntes_mongo.deletePregunta(req.params.id).then((result) => {
     res.send(result);
-    //console.log("La pregunta ha sigut eliminada")
+    console.log("La pregunta ha sigut eliminada")
   });
 });
 
@@ -170,7 +151,7 @@ lobbies_mongo.connectToDb()
           if (!lobby_exists) {
             console.log("New lobby created");
             let questions;
-            getQuestions(data.subject).then((result) => {
+            getQuestionsBySubject(data.subject).then((result) => {
               questions = result;
               let lobby = {
                 lobby_code: data.lobby_code,
@@ -286,7 +267,6 @@ lobbies_mongo.connectToDb()
       });
     
     socket.on("end game", (data) => {
-      //console.log(data);
       lobbies_mongo.deleteLobby(data).then((result) => {
         sendLobbyList();
       });
@@ -305,18 +285,16 @@ lobbies_mongo.connectToDb()
     });
       
       socket.on("leave lobby", () => {
-        if(lobbies_mongo.lobbyExists(socket.data.current_lobby)){
-          lobbies_mongo.leaveLobby(socket.data.current_lobby, socket.data.name).then((result) => {
-            socket.leave(socket.data.current_lobby);
-            sendPlayerList(socket);
-            sendLobbyList();
-            let info = {
-              name: socket.data.name,
-              lobby: socket.data.current_lobby,
-            }
-            io.emit("player leave", info);
-          });
-        }
+        lobbies_mongo.leaveLobby(socket.data.current_lobby, socket.data.name).then((result) => {
+          socket.leave(socket.data.current_lobby);
+          sendPlayerList(socket);
+          sendLobbyList();
+          let info = {
+            name: socket.data.name,
+            lobby: socket.data.current_lobby,
+          }
+          io.emit("player leave", info);
+        });
       });
 
       socket.on("question answered", data => {
@@ -340,7 +318,7 @@ lobbies_mongo.connectToDb()
       });
 
       socket.on("questions ended", data => {
-        lobbies_mongo.playerFinished(socket.data.current_lobby, socket.data.name).then((result) => {
+        lobbies_mongo.playerFinished(socket.data.current_lobby, socket.data.name).then(() => {
           let info = {
             playerName: socket.data.name,
             lobbyId: socket.data.current_lobby,
@@ -349,6 +327,9 @@ lobbies_mongo.connectToDb()
           lobbies_mongo.checkAllFinished(socket.data.current_lobby).then((result) => {
             if (result) {
               io.to(socket.data.current_lobby).emit("end game");
+              lobbies_mongo.deleteLobby(socket.data.current_lobby).then(() => {
+                sendLobbyList();
+              });
               console.log("Game ended");
             }
           });
@@ -356,18 +337,16 @@ lobbies_mongo.connectToDb()
       });
     
       socket.on("disconnect", () => {
-        if(lobbies_mongo.lobbyExists(socket.data.current_lobby)){
-          lobbies_mongo.leaveLobby(socket.data.current_lobby, socket.data.name).then((result) => {
-            socket.leave(socket.data.current_lobby);
-            sendPlayerList(socket);
-            sendLobbyList();
-            let info = {
-              name: socket.data.name,
-              lobby: socket.data.current_lobby,
-            }
-            io.emit("player leave", info);
-          });
-        }
+        lobbies_mongo.leaveLobby(socket.data.current_lobby, socket.data.name).then((result) => {
+          socket.leave(socket.data.current_lobby);
+          sendPlayerList(socket);
+          sendLobbyList();
+          let info = {
+            name: socket.data.name,
+            lobby: socket.data.current_lobby,
+          }
+          io.emit("player leave", info);
+        });
       });
     });   
   })
@@ -400,7 +379,6 @@ function sendQuestions(socket) {
 function sendLobbyList() {
   lobbies_mongo.getLobbies().then((lobbies) => {
     io.emit("lobbies list", JSON.stringify(lobbies));
-    //console.log(lobbies);
   });
 }
 

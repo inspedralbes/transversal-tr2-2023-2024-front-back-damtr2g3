@@ -20,8 +20,6 @@
   </v-row>
 </template>
 
-<style scoped></style>
-
 <script>
 import { useAppStore } from '../store/app';
 import { ref, watchEffect } from 'vue';
