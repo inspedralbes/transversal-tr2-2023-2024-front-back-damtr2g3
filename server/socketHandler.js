@@ -1,6 +1,38 @@
 // Desc: Socket handler for the server
 const lobbies_mongo = require('./partides_mongo.js');
 
+const { Server } = require("socket.io");
+
+let io = new Server(server, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"],
+    },
+  });
+
+  async function runSockets(server){
+    
+
+
+    io.on("connection", async (socket) => {
+        console.log("A user connected");
+        sendLobbyList();
+
+        handleGetLobbies(socket);
+        handleGetPlayers(socket);
+        handleNewLobby(socket);
+        handleJoinLobby(socket);
+        handlePlayerReady(socket);
+        handleEndGame(socket);
+        handleRemovePlayer(socket);
+        handleLeaveLobby(socket);
+        handleQuestionAnswered(socket);
+        handleAnswerData(socket);
+        handleQuestionsEnded(socket);
+        handleDisconnect(socket);
+    });
+  }
+
 async function handleGetLobbies(socket){
     socket.on("get lobbies", () => {
         sendLobbyList();
@@ -8,20 +40,18 @@ async function handleGetLobbies(socket){
 }
 
 async function handleGetPlayers(socket) {
-    return new Promise((resolve, reject) => {
-      socket.on('get players', async (data) => {
-        try {
-          const jugadors = await lobbies_mongo.getPlayersByLobbyCode(data);
-          if (jugadors != null) {
-            resolve({ type: 'players list', data: JSON.stringify(jugadors) });
-          } else {
-            resolve({ type: 'players error' });
-          }
-        } catch (error) {
-          console.log(error);
-          reject(error);
+    socket.on('get players', async (data) => {
+    try {
+        const jugadors = await lobbies_mongo.getPlayersByLobbyCode(data);
+        if (jugadors != null) {
+            io.to(socket.id).emit("players list", JSON.stringify(jugadors));
+        } else {
+            io.to(socket.id).emit("players error");
         }
-      });
+    } catch (error) {
+        console.log(error);
+        reject(error);
+    }
     });
   }  
   
@@ -274,5 +304,25 @@ async function sendQuestions(socket) {
     }
 }
 
-module.exports = {handleGetLobbies, handleGetPlayers, handleNewLobby, handleJoinLobby, handlePlayerReady, handleEndGame, handleRemovePlayer, 
-    handleLeaveLobby, handleQuestionAnswered, handleAnswerData, handleQuestionsEnded, handleDisconnect, sendLobbyList, sendQuestions};
+function sendPlayerList(socket) {
+    lobbies_mongo.findLobby(socket.data.current_lobby).then((result) => {
+      let currentLobby = result;
+      if (currentLobby) {
+        io.to(socket.data.current_lobby).emit("player list", currentLobby.players);
+      }
+    });
+  }
+  
+  function sendQuestions(socket) {
+    lobbies_mongo.findLobby(socket.data.current_lobby).then((result) => {
+      let currentLobby = result;
+      if (currentLobby) {
+        io.to(socket.data.current_lobby).emit(
+          "questions received",
+          currentLobby.questions
+        );
+      }
+    });
+  }
+
+module.exports = {runSockets};

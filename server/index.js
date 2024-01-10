@@ -1,6 +1,6 @@
 const express = require("express");
 const http = require("http");
-const { Server } = require("socket.io");
+
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { MongoClient, ServerApiVersion, ObjectId, UUID } = require("mongodb");
@@ -8,12 +8,7 @@ const app = express();
 const server = http.createServer(app);
 const { v4: uuidv4 } = require("uuid");
 const { Console, log, trace } = require("console");
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
+
 
 
 const lobbies_mongo = require("./partides_mongo.js");
@@ -138,54 +133,11 @@ app.get("/getUniqueID", async (req, res) => {
   res.send({id: randomID});
 });
 
-
-main();
 //Gestió de partides amb sockets i mongo
-io.on("connection", async (socket) => {
-  console.log("A user connected");
-  socketHandler.sendLobbyList();
-
-  socketHandler.handleGetLobbies(socket);
-  try {
-    const result = await handleGetPlayers(socket);
-    io.to(socket.id).emit(result.type, result.data);
-  } catch (error) {
-    console.log(error);
-  }
-  socketHandler.handleNewLobby(socket);
-  socketHandler.handleJoinLobby(socket);
-  socketHandler.handlePlayerReady(socket);
-  socketHandler.handleEndGame(socket);
-  socketHandler.handleRemovePlayer(socket);
-  socketHandler.handleLeaveLobby(socket);
-  socketHandler.handleQuestionAnswered(socket);
-  socketHandler.handleAnswerData(socket);
-  socketHandler.handleQuestionsEnded(socket);
-  socketHandler.handleDisconnect(socket);
-
-});
+socketHandler.runSockets(server);
 
 
-function sendPlayerList(socket) {
-  lobbies_mongo.findLobby(socket.data.current_lobby).then((result) => {
-    let currentLobby = result;
-    if (currentLobby) {
-      io.to(socket.data.current_lobby).emit("player list", currentLobby.players);
-    }
-  });
-}
 
-function sendQuestions(socket) {
-  lobbies_mongo.findLobby(socket.data.current_lobby).then((result) => {
-    let currentLobby = result;
-    if (currentLobby) {
-      io.to(socket.data.current_lobby).emit(
-        "questions received",
-        currentLobby.questions
-      );
-    }
-  });
-}
 
 
 

@@ -12,7 +12,7 @@ const routes = [
     component: CombatScreen,
   },
   {
-    path: "/",
+    path: "/JoinGame",
     name: "JoinGame",
     component: JoinGame,
   },
