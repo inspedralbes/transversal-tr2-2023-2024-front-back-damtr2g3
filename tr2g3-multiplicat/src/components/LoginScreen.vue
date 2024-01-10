@@ -12,7 +12,7 @@
             <!-- Your login form inputs go here -->
             <v-form>
               <v-text-field v-model="username" label="Username"></v-text-field>
-              <v-text-field v-model="password" label="Password" type="password"></v-text-field>
+              <v-text-field v-model="contrasenya" label="contrasenya" type="contrasenya"></v-text-field>
             </v-form>
             <v-snackbar v-model="snackbar" :timeout="timeout">
               {{ text }}
@@ -23,7 +23,7 @@
                 </v-btn>
               </template>
             </v-snackbar>
-            <v-btn @click="validateLoginBtn(username, password)" type="submit" color="primary">Login</v-btn>
+            <v-btn @click="validateLoginBtn(username, contrasenya)" type="submit" color="primary">Login</v-btn>
             <v-btn @click=prepararRegistre() type="submit" color="primary">Registrat</v-btn>
             <v-card v-show="popUpRegistre"
               style="background-color: rgba(255, 255, 255, 0.5) !important; border-color: white !important;">
@@ -86,11 +86,11 @@ export default {
       console.log(autoritzacio);
       if (autoritzacio.autoritzacio) {
         this.GuardarLogin(username)
-        console.log('we are in');
+        console.log('correcte');
         this.$router.push('/mainmenu');
       } else {
         this.snackbar=true
-        console.log('you fucked up');
+        console.log('error');
       }
     },
     crearUser(nom, user, contrasenya, foto, email, classe) {

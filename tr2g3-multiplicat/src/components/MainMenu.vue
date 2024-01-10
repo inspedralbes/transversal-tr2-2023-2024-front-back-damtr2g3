@@ -8,18 +8,18 @@
     <v-row aria-rowspan="2">
       <v-col md="4">
         <v-btn class="menu_option_button" style="background-color:forestgreen;" @click="this.$router.push('/profile')">
-            Profile
+            Perfil
         </v-btn>
         <v-btn class="menu_option_button" style="margin-top: 300px; background-color:aqua;" @click="this.$router.push('/')">
-            Single Player Mode
+            Entrenament
         </v-btn>
       </v-col>
       <v-col md="4">
         <v-btn class="menu_option_button" style="background-color:yellow;"  @click="snackbar = true">
-          Statistics
+          Estadistiques
         </v-btn>
         <v-btn class="menu_option_button" style="margin-top: 300px; background-color:orange;" @click="this.$router.push('/gacha')">
-          Gachapon
+          Botiga
         </v-btn>
         <!--<v-btn class="menu_option_button" style="margin-top: 300px; background-color:rgb(97, 80, 175);"  @click="this.$router.push('/options')">
         Opcions
