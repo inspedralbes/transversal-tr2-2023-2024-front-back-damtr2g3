@@ -21,7 +21,10 @@
         <v-btn class="menu_option_button" style="margin-top: 300px; background-color:orange;" @click="this.$router.push('/gacha')">
           Gachapon
         </v-btn>
-        <v-btn class="menu_option_button" style="margin-top: 300px; background-color:rgb(97, 80, 175);"  @click="this.$router.push('/options')">
+        <!--<v-btn class="menu_option_button" style="margin-top: 300px; background-color:rgb(97, 80, 175);"  @click="this.$router.push('/options')">
+        Opcions
+        </v-btn>-->
+        <v-btn class="menu_option_button" style="margin-top: 300px; background-color:rgb(97, 80, 175);"  @click="snackbar = true">
           Opcions
         </v-btn>
         <v-snackbar v-model="snackbar" :timeout="timeout">
