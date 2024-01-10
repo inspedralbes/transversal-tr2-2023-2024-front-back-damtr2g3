@@ -51,8 +51,13 @@ export default {
 
       selectedAnswer.value = respuesta;
       answerSelected.value = true;
+
+      store.attack();
       if (respuesta.correcta) {
         store.reduirVidaEnemic(10);
+        store.getHit();
+      } else {
+        store.dodge();
       }
 
       let answerData = {

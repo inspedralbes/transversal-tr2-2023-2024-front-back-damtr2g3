@@ -64,7 +64,7 @@ export default {
                     max_players: this.max_players,
                 };
                 socket.emit("newLobby", gameData);
-                this.lobbyCode = this.randomInt;
+                this.lobbyCode = this.randomInt.toString();
             }
         },
     }
