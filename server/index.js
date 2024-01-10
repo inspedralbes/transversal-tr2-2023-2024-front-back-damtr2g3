@@ -28,14 +28,14 @@ const uri =
 
 const PORT = process.env.PORT || 3333;
 
-async function startServer(){
-  try{
+async function startServer() {
+  try {
     await lobbies_mongo.connectToDb();
-    console.log("Connected to partides database")
+    console.log("Connected to partides database");
     await stats_mongo.connectToStats();
-    console.log("Connected to stats database")
+    console.log("Connected to stats database");
     await preguntes_mongo.connectToPreguntes();
-    console.log("Connected to preguntes database")
+    console.log("Connected to preguntes database");
     server.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);
     });
@@ -46,59 +46,61 @@ async function startServer(){
 
 startServer();
 
-
 //Gestió de preguntes
 
 app.get("/getPreguntes", async (req, res) => {
-  try{
+  try {
     const result = await preguntes_mongo.getAllPreguntes();
     res.send(result);
   } catch (err) {
     console.error(err);
-    res.status.send({message: "Error al obtenir les preguntes"});
+    res.status.send({ message: "Error al obtenir les preguntes" });
   }
 });
 
 app.get("/getPregunta/:id", async (req, res) => {
-  try{
+  try {
     const result = await preguntes_mongo.getPregunta(req.params.id);
     res.send(result);
   } catch (err) {
     console.error(err);
-    res.status.send({message: "Error al obtenir la pregunta"});
+    res.status.send({ message: "Error al obtenir la pregunta" });
   }
 });
 
 app.post("/insertPregunta", async (req, res) => {
-  try{
+  try {
     const result = await preguntes_mongo.insertPregunta(req.body);
     res.send(result);
     console.log("La pregunta ha sigut inserida");
   } catch (err) {
     console.error(err);
-    res.status.send({message: "Error al inserir la pregunta"});
+    res.status.send({ message: "Error al inserir la pregunta" });
   }
 });
 
 app.delete("/deletePregunta/:id", async (req, res) => {
-  try{
+  try {
     const result = await preguntes_mongo.deletePregunta(req.params.id);
     res.send(result);
     console.log("La pregunta ha sigut eliminada");
   } catch (err) {
     console.error(err);
-    res.status.send({message: "Error al eliminar la pregunta"});
+    res.status.send({ message: "Error al eliminar la pregunta" });
   }
 });
 
 app.put("/updatePregunta/:id", async (req, res) => {
-  try{
-    const result = await preguntes_mongo.updatePregunta(req.params.id, req.body);
+  try {
+    const result = await preguntes_mongo.updatePregunta(
+      req.params.id,
+      req.body
+    );
     res.send(result);
     console.log("La pregunta ha sigut actualitzada");
   } catch (err) {
     console.error(err);
-    res.status.send({message: "Error al actualitzar la pregunta"});
+    res.status.send({ message: "Error al actualitzar la pregunta" });
   }
 });
 
@@ -112,7 +114,7 @@ app.get("/getUniqueID", async (req, res) => {
   }
 
   console.log(randomID);
-  res.send({id: randomID});
+  res.send({ id: randomID });
 });
 
 //Gestió de partides amb sockets i mongo
@@ -140,8 +142,3 @@ io.on("connection", async (socket) => {
   socketHandler.handleQuestionsEnded(socket, io);
   socketHandler.handleDisconnect(socket, io);
 });
-
-
-
-
-
