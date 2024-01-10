@@ -1,6 +1,7 @@
 // Desc: Socket handler for the server
-const lobbies_mongo = require('./partides_mongo.js');
-const preguntes_mongo = require('./preguntes_mongo.js');
+const lobbies_mongo = require("./partides_mongo.js");
+const preguntes_mongo = require("./preguntes_mongo.js");
+const stats_mongo = require("./stats_mongo.js");
 
 async function handleGetLobbies(socket, io){
     socket.on("get lobbies", () => {
@@ -40,6 +41,7 @@ async function handleNewLobby(socket, io){
                     maxPlayers: data.max_players,
                 };
                 await lobbies_mongo.insertLobby(lobby);
+                sendLobbyList(io);
             } else {
                 io.to(socket.id).emit("Lobby exists", data);
             }

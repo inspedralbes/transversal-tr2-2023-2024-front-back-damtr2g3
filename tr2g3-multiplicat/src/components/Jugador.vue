@@ -33,7 +33,7 @@ export default {
 
 @keyframes plunge {
     0% { transform: translate(0, 0); }
-    50% { transform: translate(38vw, -38vh); }
+    50% { transform: translate(38vw, -38vw); }
     100% { transform: translate(0, 0); }
 }
 </style>
