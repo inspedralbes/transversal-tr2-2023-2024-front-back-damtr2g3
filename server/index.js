@@ -6,10 +6,9 @@ const bodyParser = require("body-parser");
 const { MongoClient, ServerApiVersion, ObjectId, UUID } = require("mongodb");
 const app = express();
 const server = http.createServer(app);
+const { Server } = require("socket.io");
 const { v4: uuidv4 } = require("uuid");
 const { Console, log, trace } = require("console");
-
-
 
 const lobbies_mongo = require("./partides_mongo.js");
 const preguntes_mongo = require("./preguntes_mongo.js");
@@ -46,23 +45,6 @@ async function startServer(){
 }
 
 startServer();
-
-async function getQuestionsBySubject(subject) {
-  try {
-    const db = lobbies_mongo.client.db("G3-Proj2");
-    const collection = db.collection("preguntas");
-    const questions = await collection
-      .aggregate([
-        { $match: { subject: subject } },
-        { $sample: { size: 10 } }
-      ])
-      .toArray();
-    return questions;
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-}
 
 
 //Gestió de preguntes
@@ -134,8 +116,30 @@ app.get("/getUniqueID", async (req, res) => {
 });
 
 //Gestió de partides amb sockets i mongo
-socketHandler.runSockets(server);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
 
+io.on("connection", async (socket) => {
+  console.log("A user connected");
+  socketHandler.sendLobbyList(io);
+
+  socketHandler.handleGetLobbies(socket, io);
+  socketHandler.handleGetPlayers(socket, io);
+  socketHandler.handleNewLobby(socket, io);
+  socketHandler.handleJoinLobby(socket, io);
+  socketHandler.handlePlayerReady(socket, io);
+  socketHandler.handleEndGame(socket, io);
+  socketHandler.handleRemovePlayer(socket, io);
+  socketHandler.handleLeaveLobby(socket, io);
+  socketHandler.handleQuestionAnswered(socket, io);
+  socketHandler.handleAnswerData(socket, io);
+  socketHandler.handleQuestionsEnded(socket, io);
+  socketHandler.handleDisconnect(socket, io);
+});
 
 
 

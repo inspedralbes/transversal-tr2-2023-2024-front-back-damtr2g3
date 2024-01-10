@@ -1,45 +1,14 @@
 // Desc: Socket handler for the server
 const lobbies_mongo = require('./partides_mongo.js');
+const preguntes_mongo = require('./preguntes_mongo.js');
 
-const { Server } = require("socket.io");
-
-let io = new Server(server, {
-    cors: {
-      origin: "*",
-      methods: ["GET", "POST"],
-    },
-  });
-
-  async function runSockets(server){
-    
-
-
-    io.on("connection", async (socket) => {
-        console.log("A user connected");
-        sendLobbyList();
-
-        handleGetLobbies(socket);
-        handleGetPlayers(socket);
-        handleNewLobby(socket);
-        handleJoinLobby(socket);
-        handlePlayerReady(socket);
-        handleEndGame(socket);
-        handleRemovePlayer(socket);
-        handleLeaveLobby(socket);
-        handleQuestionAnswered(socket);
-        handleAnswerData(socket);
-        handleQuestionsEnded(socket);
-        handleDisconnect(socket);
-    });
-  }
-
-async function handleGetLobbies(socket){
+async function handleGetLobbies(socket, io){
     socket.on("get lobbies", () => {
-        sendLobbyList();
+        sendLobbyList(io);
     });
 }
 
-async function handleGetPlayers(socket) {
+async function handleGetPlayers(socket, io) {
     socket.on('get players', async (data) => {
     try {
         const jugadors = await lobbies_mongo.getPlayersByLobbyCode(data);
@@ -56,12 +25,12 @@ async function handleGetPlayers(socket) {
   }  
   
 
-async function handleNewLobby(socket){
+async function handleNewLobby(socket, io){
     socket.on("newLobby", async (data) => {
         try{
             const lobby_exists = await lobbies_mongo.lobbyExists(data.lobby_code);
             if(!lobby_exists){
-                let questions = await getQuestionsBySubject(data.subject);
+                let questions = await preguntes_mongo.getQuestionsBySubject(data.subject);
                 let lobby = {
                     lobby_code: data.lobby_code,
                     subject: data.subject,
@@ -80,7 +49,7 @@ async function handleNewLobby(socket){
     });
 }
 
-async function handleJoinLobby(socket) {
+async function handleJoinLobby(socket, io) {
     socket.on("join lobby", async (data) => {
         try {
             console.log("joining lobby");
@@ -121,9 +90,9 @@ async function handleJoinLobby(socket) {
             io.emit("player join", player);
             socket.data.current_lobby = data.lobby_code;
             socket.data.name = data.name;
-            sendLobbyList();
-            sendPlayerList(socket);
-            sendQuestions(socket);
+            sendLobbyList(io);
+            sendPlayerList(socket, io);
+            sendQuestions(socket, io);
 
         } catch (error) {
             console.error(error);
@@ -134,7 +103,7 @@ async function handleJoinLobby(socket) {
     });
 }
 
-async function handlePlayerReady(socket) {
+async function handlePlayerReady(socket, io) {
     socket.on("player ready", async (player) => {
         try {
             await lobbies_mongo.playerReady(player.lobby_code, player.name);
@@ -145,20 +114,20 @@ async function handlePlayerReady(socket) {
             io.emit("status ready", data);
             const result = await lobbies_mongo.checkAllReady(player.lobby_code);
             if (result) {
-                sendPlayerList(socket);
+                sendPlayerList(socket, io);
                 let dataReady = {
                     lobbyId: player.lobby_code,
                 }
                 io.emit("all ready", dataReady);
                 await lobbies_mongo.setAllPlaying(player.lobby_code);
-                sendPlayerList(socket);
+                sendPlayerList(socket, io);
                 io.to(socket.data.current_lobby).emit("start game");
                 io.to(socket.data.lobby_code).emit("start countdown");
                 setTimeout(() => {
                     io.to(socket.data.lobby_code).emit("start game");
                 }, 5000);
             } else {
-                sendPlayerList(socket);
+                sendPlayerList(socket, io);
             }
         } catch (error) {
             console.error(error);
@@ -167,11 +136,11 @@ async function handlePlayerReady(socket) {
 }
 
 
-async function handleEndGame(socket) {
+async function handleEndGame(socket, io) {
     socket.on("end game", async (data) => {
         try {
             await lobbies_mongo.deleteLobby(data);
-            sendLobbyList();
+            sendLobbyList(io);
         } catch (error) {
             console.error(error);
         }
@@ -179,12 +148,12 @@ async function handleEndGame(socket) {
 }
 
 
-async function handleRemovePlayer(socket) {
+async function handleRemovePlayer(socket, io) {
     socket.on("remove player", async (data) => {
         try {
             await lobbies_mongo.leaveLobby(data.lobby_code, data.name);
-            sendPlayerList(socket);
-            sendLobbyList();
+            sendPlayerList(socket, io);
+            sendLobbyList(io);
             let info = {
                 name: data.name,
                 lobby: data.lobby_code,
@@ -197,13 +166,13 @@ async function handleRemovePlayer(socket) {
 }
 
 
-async function handleLeaveLobby(socket) {
+async function handleLeaveLobby(socket, io) {
     socket.on("leave lobby", async () => {
         try {
             await lobbies_mongo.leaveLobby(socket.data.current_lobby, socket.data.name);
             socket.leave(socket.data.current_lobby);
-            sendPlayerList(socket);
-            sendLobbyList();
+            sendPlayerList(socket, io);
+            sendLobbyList(io);
             let info = {
                 name: socket.data.name,
                 lobby: socket.data.current_lobby,
@@ -216,7 +185,7 @@ async function handleLeaveLobby(socket) {
 }
 
 
-async function handleQuestionAnswered(socket) {
+async function handleQuestionAnswered(socket, io) {
     socket.on("question answered", async (data) => {
         try {
             if(data.correcta){
@@ -227,7 +196,7 @@ async function handleQuestionAnswered(socket) {
                 }
                 io.emit("increment score", increaseData);
                 await lobbies_mongo.increaseScore(socket.data.current_lobby, socket.data.name, 10);
-                sendPlayerList(socket);
+                sendPlayerList(socket, io);
             }
         } catch (error) {
             console.error(error);
@@ -236,7 +205,7 @@ async function handleQuestionAnswered(socket) {
 }
 
 
-async function handleAnswerData(socket) {
+async function handleAnswerData(socket, io) {
     socket.on("answer data", async (data) => {
         try {
             await stats_mongo.insertStats(data);
@@ -248,8 +217,8 @@ async function handleAnswerData(socket) {
 }
 
 
-async function handleQuestionsEnded(socket) {
-    socket.on("questions ended", async (data) => {
+async function handleQuestionsEnded(socket, io) {
+    socket.on("questions ended", async () => {
         try {
             await lobbies_mongo.playerFinished(socket.data.current_lobby, socket.data.name);
             let info = {
@@ -261,7 +230,7 @@ async function handleQuestionsEnded(socket) {
             if (result) {
                 io.to(socket.data.current_lobby).emit("end game");
                 await lobbies_mongo.deleteLobby(socket.data.current_lobby);
-                sendLobbyList();
+                sendLobbyList(io);
                 console.log("Game ended");
             }
         } catch (error) {
@@ -271,13 +240,13 @@ async function handleQuestionsEnded(socket) {
 }
 
 
-async function handleDisconnect(socket) {
+async function handleDisconnect(socket, io) {
     socket.on("disconnect", async () => {
         try {
             await lobbies_mongo.leaveLobby(socket.data.current_lobby, socket.data.name);
             socket.leave(socket.data.current_lobby);
-            sendPlayerList(socket);
-            sendLobbyList();
+            sendPlayerList(socket, io);
+            sendLobbyList(io);
             let info = {
                 name: socket.data.name,
                 lobby: socket.data.current_lobby,
@@ -289,12 +258,12 @@ async function handleDisconnect(socket) {
     });
 }
 
-async function sendLobbyList() {
+async function sendLobbyList(io) {
     const lobbies = await lobbies_mongo.getLobbies();
     io.emit("lobbies list", JSON.stringify(lobbies));
   }
 
-async function sendQuestions(socket) {
+async function sendQuestions(socket, io) {
     const currentLobby = await lobbies_mongo.findLobby(socket.data.current_lobby);
     if (currentLobby) {
         io.to(socket.data.current_lobby).emit(
@@ -304,7 +273,7 @@ async function sendQuestions(socket) {
     }
 }
 
-function sendPlayerList(socket) {
+function sendPlayerList(socket, io) {
     lobbies_mongo.findLobby(socket.data.current_lobby).then((result) => {
       let currentLobby = result;
       if (currentLobby) {
@@ -312,17 +281,6 @@ function sendPlayerList(socket) {
       }
     });
   }
-  
-  function sendQuestions(socket) {
-    lobbies_mongo.findLobby(socket.data.current_lobby).then((result) => {
-      let currentLobby = result;
-      if (currentLobby) {
-        io.to(socket.data.current_lobby).emit(
-          "questions received",
-          currentLobby.questions
-        );
-      }
-    });
-  }
 
-module.exports = {runSockets};
+module.exports = {sendLobbyList, sendPlayerList, sendQuestions, handleGetLobbies, handleGetPlayers, handleNewLobby, handleJoinLobby, 
+    handlePlayerReady, handleEndGame, handleRemovePlayer, handleLeaveLobby, handleQuestionAnswered, handleAnswerData, handleQuestionsEnded, handleDisconnect};

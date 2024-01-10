@@ -18,6 +18,21 @@ async function connectToPreguntes() {
   });
 }
 
+async function getQuestionsBySubject(subject) {
+    try {
+      const questions = await preguntes
+        .aggregate([
+          { $match: { subject: subject } },
+          { $sample: { size: 10 } }
+        ])
+        .toArray();
+      return questions;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }
+
 //obtenir totes les preguntes desde mongo
 async function getAllPreguntes() {
   return new Promise((resolve, reject) => {
@@ -103,4 +118,5 @@ module.exports = {
   insertPregunta,
   deletePregunta,
   updatePregunta,
+    getQuestionsBySubject
 };

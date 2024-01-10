@@ -1,5 +1,5 @@
 // Composables
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import CombatScreen from "@/components/CombatScreen.vue";
 import JoinGame from "@/components/JoinGame.vue";
 import CreateGame from "@/components/CreateGame.vue";
@@ -29,7 +29,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(process.env.BASE_URL),
+  history: createWebHistory(process.env.BASE_URL),
   routes,
 });
 
