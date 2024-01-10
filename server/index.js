@@ -51,7 +51,9 @@ app.post("/login", function (req, res) {
     
                 if (usuaris[i].username == usuari) {
                     if (usuaris[i].contrasenya == passwd) {
-                        usuariTrobat = true;
+                        if(usuaris[i].autoritzada){
+                            usuariTrobat = true;
+                        }
                     }
                 }
             }
@@ -84,16 +86,18 @@ app.post("/loginProf", function (req, res) {
             res.json(null)
     })
 })//crida al login, return id del prof si es true
-app.post("/infoUser", function(req, res){
+app.post("/infoUser", async function(req, res){
+    console.log(req.body)
     usuari=req.body.username
-    info=bbdd.ObtenirInfoUsuari(usuari, connection) 
+    info=await bbdd.ObtenirInfoUsuari(usuari, connection) 
+    console.log(info)
     info=JSON.parse(info)
     res.json(info)
 })//obtenir dades personals usuari
 app.post("/restablirPasswd", function(req, res){
     usuariActualitzat=req.body.user
     novaContrasenya=req.body.passwd
-    bbdd.restablirContrasenya(usuariActualitzat, novaContrasenya, connection)
+    bbdd.CambiarContrasena(usuariActualitzat, novaContrasenya, connection)
 })//cambiar la contrasenya existent per una de nova
 app.post("/alumnesClasse",async function (req, res) {
     alumnes= await bbdd.dadesAlumnesClasse(req.body.id, connection)

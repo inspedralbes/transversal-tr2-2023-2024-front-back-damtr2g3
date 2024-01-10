@@ -1,6 +1,6 @@
 export async function getUserInfo(user){
     const dades={
-        student: user,
+        username: user,
     };
     const response = await fetch('http://localhost:3001/infoUser', 
     {

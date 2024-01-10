@@ -39,7 +39,7 @@ async function obtenirPreguntes(numPreguntes){
 }//obtenir un numero n de preguntes desde mongo
 async function login(connection){
         try {
-            const [rows, fields] = await connection.execute('SELECT  username, contrasenya FROM alumnes');
+            const [rows, fields] = await connection.execute('SELECT  username, contrasenya, autoritzada FROM alumnes');
             const usuariosJSON = JSON.stringify(rows);
             return usuariosJSON;
         } catch (error) {
@@ -69,7 +69,7 @@ async function ObtenirInfoUsuari(usuari, connection){
 }//retornar la informacio del usuari desitjat 
 async function CambiarContrasena(usuari, passw, connection){
     try {
-        const [rows, fields] = await connection.execute('UPDATE contrasenya FROM alumnes WHERE username='+"'"+usuari+"'"+'Set contrasenya='+ "'"+passw+"'");
+        const [rows, fields] = await connection.execute('UPDATE alumnes Set contrasenya='+ "'"+passw+"'"+' WHERE username='+"'"+usuari+"'");
         const usuariosJSON = JSON.stringify(rows);
         return usuariosJSON;
     } catch (error) {

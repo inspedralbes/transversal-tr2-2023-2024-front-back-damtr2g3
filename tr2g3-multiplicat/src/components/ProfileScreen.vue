@@ -2,17 +2,20 @@
     <v-container >
         <v-row>
             <v-col>
-                <v-card flat style="height: 800px; width: 500px; margin-left: 570px; background-color: rgba(255, 255, 255, 0.5) !important; border-color: white !important;">
+                <v-card flat style="height: 800px; width: 500px; margin-left: 500px; background-color: rgba(255, 255, 255, 0.5) !important; border-color: white !important;">
                     <v-img :src="this.pfp" max-height="250px"></v-img>
                     <v-card-item class="user_info_holder">
                         <v-card-title class="user_info" style="margin-left: 69px;">
-                            {{this.StoredUsername}}    
+                        Username: {{this.StoredUsername}}    
                         </v-card-title>
                         <v-card-text class="user_info" style="margin-top: 50px;">
-                            {{this.classe}}  
+                            Codi classe: {{this.classe}}  
                         </v-card-text>
                         <v-card-text class="user_info" style="margin-top: -100px;">
-                            {{this.Email}}  
+                            Email: {{this.Email}}  
+                        </v-card-text>
+                        <v-card-text class="user_info" style="margin-top: -150px;">
+                            Punts: {{this.punts}}  
                         </v-card-text>
                     </v-card-item>
                     <v-card-actions>
@@ -41,7 +44,8 @@
                 classe: "",
                 Email: "",
                 popUpPasswd:false,
-                pfp:""
+                pfp:"",
+                punts:""
             };
             
         },
@@ -55,7 +59,8 @@
                     getUserInfo(this.StoredUsername).then(response => {
                     this.classe = response[0].classe;
                     this.Email=response[0].correu 
-                    this.pfp=response[0].fotoPerfil           
+                    this.pfp=response[0].fotoPerfil 
+                    this.punts=response[0].puntsGacha          
                 })}
             }
 
