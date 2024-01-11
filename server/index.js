@@ -13,6 +13,7 @@ const { v4: uuidv4 } = require("uuid");
 const { Console, log, trace } = require("console");
 const bbdd=require('./bbdd.js');
 //app.use(express.static('grafics'));
+const path = require('path');
 
 const lobbies_mongo = require("./partides_mongo.js");
 const preguntes_mongo = require("./preguntes_mongo.js");
@@ -48,7 +49,7 @@ app.use(cors(
 const uri =
   "mongodb+srv://a22celgariba:5xaChqdY3ei4ukcp@cluster0.2skn7nc.mongodb.net/?retryWrites=true&w=majority";
 
-const PORT = process.env.PORT || 3333;
+const PORT = process.env.PORT || 3817;
 
 async function startServer() {
   try {
@@ -65,6 +66,12 @@ async function startServer() {
     console.error(err);
   }
 }
+
+app.get('/',(req,res) =>{
+    res.sendFile(path.join("/home/a22rubsersot/web/multiplicatg3.dam.inspedralbes.cat/public_html", 'index.html'));
+  });
+
+  app.use(express.static(path.join("/home/a22rubsersot/web/multiplicatg3.dam.inspedralbes.cat/public_html")));
 
 startServer();
 

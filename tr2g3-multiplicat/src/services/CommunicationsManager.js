@@ -1,8 +1,10 @@
+const BASEURL = 'http://multiplicatg3.dam.inspedralbes.cat:3817';
+
 export async function getUserInfo(user){
     const dades={
         username: user,
     };
-    const response = await fetch('http://localhost:3333/infoUser', 
+    const response = await fetch(BASEURL + '/infoUser', 
     {
         method: 'POST',
         headers: {
@@ -22,7 +24,7 @@ const dades ={
     passwd: password
 }
 
-const response = await fetch(`http://localhost:3333/login`,
+const response = await fetch(BASEURL + '/login',
     {
         method: 'POST',
         headers: {
@@ -43,7 +45,7 @@ export async function CambiarContrasenya(user, novaPasswd){
         passwd: novaPasswd
     }
     
-    const response = await fetch(`http://localhost:3333/restablirPasswd`,
+    const response = await fetch(BASEURL + '/restablirPasswd',
         {
             method: 'POST',
             headers: {
@@ -67,7 +69,7 @@ export async function nouUsuari(nom,user, contrasenya, foto, email, classe){
         classe:classe
     }
     
-    const response = await fetch(`http://localhost:3333/registrarUsuari`,
+    const response = await fetch(BASEURL + '/registrarUsuari',
         {
             method: 'POST',
             headers: {
@@ -80,7 +82,7 @@ export async function nouUsuari(nom,user, contrasenya, foto, email, classe){
 }//envia un objecte alumne a node per inserir-lo en la bbdd
 
 export async function revisarClasses(){
-    const response = await fetch('http://localhost:3333/obtenirClassesRegistre');
+    const response = await fetch(BASEURL + '/obtenirClassesRegistre');
     const classes = await response.json();
     return classes
       
@@ -92,7 +94,7 @@ export async function obtenirStats(username){
         username: username,
     }
     
-    const response = await fetch(`http://localhost:3333/obtenirDadesAlumneVue`,
+    const response = await fetch(BASEURL + '/obtenirDadesAlumneVue',
         {
             method: 'POST',
             headers: {
@@ -110,7 +112,7 @@ export async function geColorsGacha(user){
     const dades={
         student: user,
     };
-    const response = await fetch('http://localhost:3333/colorsGacha', 
+    const response = await fetch(BASEURL + '/colorsGacha', 
     {
         method: 'POST',
         headers: {

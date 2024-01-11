@@ -1,7 +1,7 @@
 <template>
   <v-container style="margin-top: 75px;">
     <v-text-field class="code_field"></v-text-field>
-    <v-btn type="submit" color="primary" style="margin-left: 700px;" @click="this.$router.push('/lobby')">Join Game Room</v-btn>
+    <v-btn type="submit" color="primary" style="margin-left: 700px;" @click="this.$router.push('/JoinGame')">Join Game Room</v-btn>
   </v-container>
 
   <v-container style="margin-top: 100px;">
