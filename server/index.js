@@ -294,9 +294,10 @@ app.get("/obtenirClassesRegistre", async function (req, res){
   classes=JSON.parse(classes)
   res.json(classes) 
 })//envia un llistat de totes les classes per facilitar el registre d'un nou alumne
+
 app.post("/obtenirDadesAlumneVue", async function (req, res){
   alumne=req.body.username
-  infoAlumne=await bbdd.ObtenirInfoUsuari(alumne)
+  infoAlumne=await bbdd.ObtenirInfoUsuari(alumne, connection)
   infoAlumne=JSON.parse(infoAlumne)
   idAlumne=infoAlumne.idAlum
   dades=bbdd.recollirStatsAlumne(idAlumne)
@@ -328,6 +329,7 @@ app.post("/obtenirDadesAlumneVue", async function (req, res){
   }
   res.json(dadesFinals)
 })//envia estadistiques a vue per generar grafics
+
 app.post("/obtenirStatsTextualsAlumne", function (req, res){
   alumne=req.body.username
   dadesTextuals={

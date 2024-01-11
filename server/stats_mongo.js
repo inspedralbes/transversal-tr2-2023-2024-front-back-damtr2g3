@@ -32,4 +32,5 @@ async function insertStats(data) {
   });
 }
 
+
 module.exports = { connectToStats, insertStats };
