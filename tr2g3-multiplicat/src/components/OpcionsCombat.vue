@@ -61,10 +61,10 @@ export default {
       }
 
       let answerData = {
-        playerId: store.playerId,
+        playerId: store.loginInfo.id,
         questionId: preguntesActuals.value[currentQuestionIndex.value].id,
         question: preguntesActuals.value[currentQuestionIndex.value].pregunta,
-        correctAnswer: preguntesActuals.value[currentQuestionIndex.value].respostes.find((resposta) => resposta.correcta).resposta,
+        resultat: respuesta.correcta,
         answerTime: answerTime
       };
 

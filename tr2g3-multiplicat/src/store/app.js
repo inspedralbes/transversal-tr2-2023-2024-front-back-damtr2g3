@@ -9,7 +9,6 @@ export const useAppStore = defineStore("app", {
       puntuacio: 0,
       isAttacking: false,
     },
-
     //Enemic
     enemic: {
       imatge:
@@ -18,6 +17,12 @@ export const useAppStore = defineStore("app", {
       maxLife: 100,
       isHit: false,
       isDodging: false,
+    },
+    loginInfo: {
+      loggedIn: false,
+      username: '',
+      image: '',
+      id:""
     },
   }),
   actions: {
@@ -43,6 +48,22 @@ export const useAppStore = defineStore("app", {
       setTimeout(() => {
         this.enemic.isDodging = false;
       }, 1000);
+    },
+    setLoginInfo({ loggedIn, username, image, id }) {
+      this.loginInfo.loggedIn = loggedIn;
+      this.loginInfo.username = username;
+      this.loginInfo.image = image;
+      this.id=id
+    },
+    isLoggedIn(){
+      return this.loginInfo.loggedIn;
+    },
+    getLoginInfo(){
+      return this.loginInfo;
+    },
+    logejarUser(username){
+      this.loggedIn=true;
+      this.username=username
     },
   },
 });
