@@ -26,12 +26,12 @@ export default {
             Stats: [{}],
             grafiques:[],
             chartData: {
-                labels: [ Stats.pregunta ],
-                datasets: [ Stats.correcte - Stats.incorrecte  ]
+                labels: [ this.Stats.pregunta ],
+                datasets: [ this.Stats.correcte - this.Stats.incorrecte  ]
             },
             chartData2: {
-                labels: [Stats.temps ],
-                datasets: [ Stats.pregunta  ]
+                labels: [this.Stats.temps ],
+                datasets: [ this.Stats.pregunta  ]
             },
             chartOptions: {
                 responsive: true
@@ -42,15 +42,15 @@ export default {
     methods: {
         generarDades1(id){
             chartData: {
-                labels: [ Stats[id].pregunta ];
-                datasets: [ Stats[id].correcte - Stats[id].incorrecte  ]
+                labels: [ this.Stats[id].pregunta ];
+                datasets: [ this.Stats[id].correcte - this.Stats[id].incorrecte  ]
             }
             return chartData
         },
         generarDades2(id){
             chartData: {
-                labels: [ Stats[id].temps ];
-                datasets: [ Stats[id].pregunta ]
+                labels: [ this.Stats[id].temps ];
+                datasets: [ this.Stats[id].pregunta ]
             }
             return chartData
         }
@@ -58,7 +58,8 @@ export default {
     created() {
         console.log("on created")
         obtenirStats(this.StoredUsername).then(response => {
-            this.Stats = response            
+            this.Stats = response  
+            console.log(Stats)          
         });
 
     },

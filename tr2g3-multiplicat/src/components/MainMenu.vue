@@ -15,7 +15,7 @@
         </v-btn>
       </v-col>
       <v-col md="4">
-        <v-btn class="menu_option_button" style="background-color:yellow;"  @click="snackbar = true">
+        <v-btn class="menu_option_button" style="background-color:yellow;"  @click="this.$router.push('/stats')">
           Estadistiques
         </v-btn>
         <v-btn class="menu_option_button" style="margin-top: 300px; background-color:orange;" @click="this.$router.push('/gacha')">
