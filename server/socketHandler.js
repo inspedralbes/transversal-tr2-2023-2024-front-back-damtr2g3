@@ -2,6 +2,7 @@
 const lobbies_mongo = require("./partides_mongo.js");
 const preguntes_mongo = require("./preguntes_mongo.js");
 const stats_mongo = require("./stats_mongo.js");
+const funcionsGrafics=require('./index.js');
 
 async function handleGetLobbies(socket, io) {
   socket.on("get lobbies", () => {
@@ -231,6 +232,7 @@ async function handleQuestionsEnded(socket, io) {
         playerName: socket.data.name,
         lobbyId: socket.data.current_lobby,
       };
+      funcionsGrafics.generarGraficsAlumne(info.playerName)
       io.emit("player finished", info);
       const result = await lobbies_mongo.checkAllFinished(
         socket.data.current_lobby

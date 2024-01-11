@@ -373,16 +373,18 @@ app.post("/obtenirStatsTextualsClasse", function (req, res){
   res.json(dadesTextuals)
 })//transforma diferents dades del json en estadstiques legibles per un usuari
 
-/*
-function generarGraficsAlumne(alumneDesitjat){ 
-  alumne=alumneDesitjat
-  dades=bbdd.recollirStatsAlumne(alumne)
+
+async function generarGraficsAlumne(alumneDesitjat){ 
+  alumne=await bbdd.ObtenirInfoUsuari(alumneDesitjat)
+  alumne=JSON.parse(alumne)
+  idAlumne=alumne.idAlum
+  dades=await bbdd.recollirStatsAlumne(idAlumne)
   spawn('python3', ["./statsAlumne", dades])
   //crida a python
 }//envia estadistiques a un script per poder generar grafics del alumne a android
-function generarGraficsClasse(classeDesitjada){ 
+async function generarGraficsClasse(classeDesitjada){ 
   classe=classeDesitjada
-  info=bbdd.recollirStatsClasse(classe)
+  info=await bbdd.recollirStatsClasse(classe)
   const infoParsejada = {
       idClasse:info.idClasse
   };
@@ -398,8 +400,9 @@ function generarGraficsClasse(classeDesitjada){
   spawn('python3', ["./statsClasse", info])
   //crida a python
 }//envia estadistiques a un script per poder generar grafics de la classe
-function generarGraficsPreguntes(){
-  dadesPreguntes=bbdd.recollirStatsPregunta()
+async function generarGraficsPreguntes(){
+  dadesPreguntes=await bbdd.recollirStatsPregunta()
   spawn('python3', ["./statsPregunta", dadesPreguntes])
 }//envia estadistiques a un script per poder generar grafics de les preguntes
-*/
+
+module.export={generarGraficsAlumne,generarGraficsClasse,generarGraficsPreguntes }

@@ -11,8 +11,8 @@ info2=json.loads(info)
 
 def puntuacio (info2): 
     df = pd.DataFrame(info2)
-    y_values = df['puntuacio[0]']
-    x_values = df['puntuacio[0]'].value_counts()
+    y_values = df['answerTime']
+    x_values = df['question']
     plt.plot(x_values, y_values)
     plt.title('Puntuacio al llarg del temps')
     ax = plt.subplot()                   
@@ -24,8 +24,8 @@ def puntuacio (info2):
 
 def acertErrorXtema (info2): 
     df = pd.DataFrame(info2['stats'])
-    x_values = df['tema'].unique()
-    y_values = df['acerts'/'errors']
+    x_values = df['question'].unique()
+    y_values = df['resultat'].value_counts().tolist()
     plt.bar(x_values, y_values)
     plt.title('Acerts/Errors per tema')
     ax = plt.subplot()                   
