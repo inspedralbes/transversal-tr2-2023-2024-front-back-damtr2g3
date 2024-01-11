@@ -11,27 +11,29 @@ info2=json.loads(info)
 
 def puntuacio (info2): 
     df = pd.DataFrame(info2)
-    y_values = df['answerTime']
-    x_values = df['question']
-    plt.plot(x_values, y_values)
-    plt.title('Puntuacio al llarg del temps')
+    y_values = df['temps']
+    x_values = df['pregunta']
+    plt.bar(x_values, y_values)
+    plt.title('Temps que es tarda en cada pregunta')
     ax = plt.subplot()                   
     ax.set_xticks(x_values)             
     ax.set_xticklabels(x_values)       
-    ax.set_xlabel('')  
-    ax.set_ylabel('')
-    plt.savefig('./grafics/graficsAlumnes/'+info2.idAlum+'_puntuacio.jpeg')
+    ax.set_xlabel('Pregunta')  
+    ax.set_ylabel('Temps')
+    plt.savefig('./grafics/graficsAlumnes/'+info2.idAlum+'temps_pregunta.jpeg')
 
 def acertErrorXtema (info2): 
-    df = pd.DataFrame(info2['stats'])
-    x_values = df['question'].unique()
-    y_values = df['resultat'].value_counts().tolist()
+    df = pd.DataFrame(info2)
+    x_values = df['pregunta'].unique()
+    y_values = df['correcta']-['incorrecta']
     plt.bar(x_values, y_values)
-    plt.title('Acerts/Errors per tema')
+    plt.title('Acerts/Errors per pregunta')
     ax = plt.subplot()                   
     ax.set_xticks(x_values)             
     ax.set_xticklabels(x_values)       
-    ax.set_xlabel('Tema')  
-    ax.set_ylabel('%Acerts')
-    plt.savefig('./grafics/graficsAlumnes/'+info2.idAlum+'_acertsErrors.jpeg')
+    ax.set_xlabel('Pregunta')  
+    ax.set_ylabel('Respostes correctes')
+    plt.savefig('./grafics/graficsAlumnes/'+info2.idAlum+'respostes_pregunta.jpeg')
 
+puntuacio()
+acertErrorXtema()

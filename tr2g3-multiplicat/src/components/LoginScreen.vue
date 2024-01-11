@@ -12,7 +12,7 @@
             <!-- Your login form inputs go here -->
             <v-form>
               <v-text-field v-model="username" label="Username"></v-text-field>
-              <v-text-field v-model="contrasenya" label="contrasenya" type="contrasenya"></v-text-field>
+              <v-text-field v-model="contrasenya" label="contrasenya" type="password"></v-text-field>
             </v-form>
             <v-snackbar v-model="snackbar" :timeout="timeout">
               {{ text }}

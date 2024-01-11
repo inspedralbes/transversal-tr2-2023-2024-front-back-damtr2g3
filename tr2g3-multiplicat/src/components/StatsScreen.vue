@@ -24,12 +24,12 @@ export default {
             Stats: [{}],
             grafiques:[],
             chartData: {
-                labels: [ Stats[0].stats.tema ],
-                datasets: [ Stats[0].stats.correcte / Stats[0].stats.incorrecte  ]
+                labels: [ Stats.pregunta ],
+                datasets: [ Stats.correcte - Stats.incorrecte  ]
             },
             chartData2: {
-                labels: ["Puntuacio" ],
-                datasets: [ Stats.puntuacio  ]
+                labels: [Stats.temps ],
+                datasets: [ Stats.pregunta  ]
             },
             chartOptions: {
                 responsive: true

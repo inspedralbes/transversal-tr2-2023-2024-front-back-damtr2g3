@@ -294,12 +294,39 @@ app.get("/obtenirClassesRegistre", async function (req, res){
   classes=JSON.parse(classes)
   res.json(classes) 
 })//envia un llistat de totes les classes per facilitar el registre d'un nou alumne
-app.post("/obtenirDadesAlumneVue", function (req, res){
+app.post("/obtenirDadesAlumneVue", async function (req, res){
   alumne=req.body.username
-  console.log(alumne)
-  dades=bbdd.recollirStatsAlumne(alumne)
-  console.log(dades)
-  res.json(dades)
+  infoAlumne=await bbdd.ObtenirInfoUsuari(alumne)
+  infoAlumne=JSON.parse(infoAlumne)
+  idAlumne=infoAlumne.idAlum
+  dades=bbdd.recollirStatsAlumne(idAlumne)
+  dadesFinals:[{
+    idAlum:idAlumne,
+    correcta:0,
+    incorrecta:0,
+    temps:0,
+    pregunta:""
+  }]
+  dades=await bbdd.recollirStatsAlumne(idAlumne)
+  const grupos = data.reduce((grupos, objeto) => {
+    const pregunta = objeto.pregunta;
+    if (!grupos[pregunta]) {
+      grupos[pregunta] = [];
+    }
+    grupos[pregunta].push(objeto);
+  }) 
+  for(let i=0; i<grupos.length; i++){
+    dadesFinals[i].pregunta=grupos[i].pregunta
+    for(let j=0; j<grupos[i].length; j++){
+      if(grupos[i][j].correcta)
+        dadesFinals[i].correcta++
+      else
+        dadesFinals[i].incorrecta++;
+      dadesFinals[i].temps=dadesFinals[i].temps+grupos[i][j].temps
+    }
+    dadesFinals[i].temps=dadesFinals[i].temps/grupos[i].length
+  }
+  res.json(dadesFinals)
 })//envia estadistiques a vue per generar grafics
 app.post("/obtenirStatsTextualsAlumne", function (req, res){
   alumne=req.body.username
@@ -378,8 +405,34 @@ async function generarGraficsAlumne(alumneDesitjat){
   alumne=await bbdd.ObtenirInfoUsuari(alumneDesitjat)
   alumne=JSON.parse(alumne)
   idAlumne=alumne.idAlum
+  dadesFinals:[{
+    idAlum:idAlumne,
+    correcta:0,
+    incorrecta:0,
+    temps:0,
+    pregunta:""
+  }]
   dades=await bbdd.recollirStatsAlumne(idAlumne)
-  spawn('python3', ["./statsAlumne", dades])
+  const grupos = data.reduce((grupos, objeto) => {
+    const pregunta = objeto.pregunta;
+    if (!grupos[pregunta]) {
+      grupos[pregunta] = [];
+    }
+    grupos[pregunta].push(objeto);
+  }) 
+  for(let i=0; i<grupos.length; i++){
+    dadesFinals[i].pregunta=grupos[i].pregunta
+    for(let j=0; j<grupos[i].length; j++){
+      if(grupos[i][j].correcta)
+        dadesFinals[i].correcta++
+      else
+        dadesFinals[i].incorrecta++;
+      dadesFinals[i].temps=dadesFinals[i].temps+grupos[i][j].temps
+    }
+    dadesFinals[i].temps=dadesFinals[i].temps/grupos[i].length
+  }
+  
+  spawn('python3', ["./statsAlumne", dadesFinals])
   //crida a python
 }//envia estadistiques a un script per poder generar grafics del alumne a android
 async function generarGraficsClasse(classeDesitjada){ 

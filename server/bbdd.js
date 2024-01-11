@@ -133,8 +133,8 @@ async function revisarClasses(connection){
 async function recollirStatsAlumne(alumne){
     await client.connect();
     const db = client.db(dbName);
-    const col = db.collection("Estadistiques");
-    dades=col.find({$elemMatch:{idAlum:alumne}}) 
+    const col = db.collection("StatsAlumnes");
+    dades=col.find({$elemMatch:{playerId:alumne}}) 
     return dades
 }//obte les estadistiques d'un alumne en concret
 async function recollirStatsClasse(classe){
