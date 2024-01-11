@@ -23,7 +23,8 @@
                 </v-btn>
               </template>
             </v-snackbar>
-            <v-btn @click="validateLoginBtn(username, contrasenya)" type="submit" color="primary">Login</v-btn>
+            <v-btn @click="validateLoginBtn(username, contrasenya)" type="submit" color="primary"
+              class="mr-4">Login</v-btn>
             <v-btn @click=prepararRegistre() type="submit" color="primary">Registrat</v-btn>
             <v-card v-show="popUpRegistre"
               style="background-color: rgba(255, 255, 255, 0.5) !important; border-color: white !important;">
@@ -64,9 +65,9 @@ export default {
       email: "",
       classe: "",
       classes: [],
-      text:"S'ha rebutjat la teva solicitud, revisa que les credencials siguin correctes i que el teu professor hagi acceptat el teu usuari",
-      snackbar:false,
-      timeout:4000
+      text: "S'ha rebutjat la teva solicitud, revisa que les credencials siguin correctes i que el teu professor hagi acceptat el teu usuari",
+      snackbar: false,
+      timeout: 4000
     };
   },
   methods: {
@@ -90,7 +91,7 @@ export default {
         console.log('correcte');
         this.$router.push('/mainmenu');
       } else {
-        this.snackbar=true
+        this.snackbar = true
         console.log('error');
       }
     },
