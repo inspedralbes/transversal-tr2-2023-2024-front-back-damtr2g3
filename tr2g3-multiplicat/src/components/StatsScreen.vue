@@ -1,15 +1,17 @@
 <template>
     <v-container>
-        <Bar
-        id="grafic1"
-        :options="chartOptions"
-        :data="chartData"
-        />
-        <Bar
-        id="grafic2"
-        :options="chartOptions"
-        :data="chartData2"
-        />
+        <v-card v-for="items, index in Stats">
+            <Bar
+                id="grafic1"
+                :options="generarDades1(index)"
+                :data="chartData"
+            />
+            <Bar
+                id="grafic2"
+                :options="generarDades2(index)"
+                :data="chartData2"
+            />
+        </v-card>
     </v-container>
 </template>
 <script>
@@ -38,7 +40,20 @@ export default {
         
     },
     methods: {
-        generarGrafics(){}
+        generarDades1(id){
+            chartData: {
+                labels: [ Stats[id].pregunta ];
+                datasets: [ Stats[id].correcte - Stats[id].incorrecte  ]
+            }
+            return chartData
+        },
+        generarDades2(id){
+            chartData: {
+                labels: [ Stats[id].temps ];
+                datasets: [ Stats[id].pregunta ]
+            }
+            return chartData
+        }
     },
     created() {
         console.log("on created")
