@@ -114,7 +114,8 @@ export default {
       nextQuestion,
       selectedAnswer,
       answerSelected,
-      currentQuestionIndex
+      currentQuestionIndex,
+      shuffleArray
     };
   },
 
