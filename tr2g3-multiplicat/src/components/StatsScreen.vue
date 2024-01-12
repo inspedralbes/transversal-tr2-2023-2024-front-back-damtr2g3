@@ -3,13 +3,13 @@
         <v-card v-for="items, index in Stats">
             <Bar
                 id="grafic1"
-                :options="generarDades1(index)"
-                :data="chartData"
+                :options="this.chartOptions"
+                :data="generarDades1(index)"
             />
             <Bar
                 id="grafic2"
-                :options="generarDades2(index)"
-                :data="chartData2"
+                :options="this.chartOptions"
+                :data="generarDades2(index)"
             />
         </v-card>
     </v-container>
@@ -25,14 +25,14 @@ export default {
         return {
             Stats: [{}],
             grafiques:[],
-            chartData: {
+            /*chartData: {
                 labels: [ this.Stats.pregunta ],
                 datasets: [ this.Stats.correcte - this.Stats.incorrecte  ]
             },
             chartData2: {
                 labels: [this.Stats.temps ],
                 datasets: [ this.Stats.pregunta  ]
-            },
+            },*/
             chartOptions: {
                 responsive: true
             }
