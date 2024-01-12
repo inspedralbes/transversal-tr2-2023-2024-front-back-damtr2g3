@@ -107,6 +107,10 @@ export default {
       return array;
     }
 
+    const shuffledAnswers = computed(() => {
+      return shuffleArray(preguntesActuals.value[currentQuestionIndex.value].respostes);
+    });
+
     return {
       preguntesActuals,
       selectAnswer,
@@ -115,14 +119,9 @@ export default {
       selectedAnswer,
       answerSelected,
       currentQuestionIndex,
-      shuffleArray
+      shuffleArray,
+      shuffledAnswers
     };
   },
-
-  computed: {
-    shuffledAnswers() {
-      return shuffleArray(this.preguntesActuals[this.currentQuestionIndex].respostes);
-    }
-  }
 }
 </script>
