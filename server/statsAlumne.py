@@ -1,39 +1,26 @@
-import pandas as pd
+import pymongo
 import matplotlib.pyplot as plt
-from matplotlib import rcParams
-import sys
-import json
-#from sklearn.linear_model import LinearRegression
-from datetime import date
-info = sys.argv[1]
-info2=json.loads(info)
 
+# Conexión a MongoDB
+client = pymongo.MongoClient("mongodb+srv://a22celgariba:5xaChqdY3ei4ukcp@cluster0.2skn7nc.mongodb.net/?retryWrites=true&w=majority")
+db = client["G3-Proj2"]
+collection = db["StatsAlumnes"]
 
-def puntuacio (info2): 
-    df = pd.DataFrame(info2)
-    y_values = df['temps']
-    x_values = df['pregunta']
-    plt.bar(x_values, y_values)
-    plt.title('Temps que es tarda en cada pregunta')
-    ax = plt.subplot()                   
-    ax.set_xticks(x_values)             
-    ax.set_xticklabels(x_values)       
-    ax.set_xlabel('Pregunta')  
-    ax.set_ylabel('Temps')
-    plt.savefig('./grafics/graficsAlumnes/'+info2.idAlum+'temps_pregunta.jpeg')
+# Extracción de datos
+data = collection.find()
 
-def acertErrorXtema (info2): 
-    df = pd.DataFrame(info2)
-    x_values = df['pregunta'].unique()
-    y_values = df['correcta']-['incorrecta']
-    plt.bar(x_values, y_values)
-    plt.title('Acerts/Errors per pregunta')
-    ax = plt.subplot()                   
-    ax.set_xticks(x_values)             
-    ax.set_xticklabels(x_values)       
-    ax.set_xlabel('Pregunta')  
-    ax.set_ylabel('Respostes correctes')
-    plt.savefig('./grafics/graficsAlumnes/'+info2.idAlum+'respostes_pregunta.jpeg')
+# Preparación de los datos para el gráfico
+questions = []
+answer_times = []
+for item in data:
+    if 'question' in item and 'answerTime' in item:
+        questions.append(str(item['questionId']))
+        answer_times.append(float(item['answerTime']))
 
-puntuacio()
-acertErrorXtema()
+# Generación del gráfico de barras
+plt.bar(questions, answer_times)
+plt.xlabel('Pregunta')
+plt.ylabel('Tiempo de respuesta')
+plt.title('Tiempo de respuesta por pregunta')
+plt.xticks(rotation=90)  # Rotar las etiquetas del eje x 45 grados para mejor visualización
+plt.savefig('./statsAlumne.png')  
