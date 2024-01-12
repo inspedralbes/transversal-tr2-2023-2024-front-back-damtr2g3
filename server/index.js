@@ -295,8 +295,9 @@ app.get("/obtenirClassesRegistre", async function (req, res){
   res.json(classes) 
 })//envia un llistat de totes les classes per facilitar el registre d'un nou alumne
 app.post("/obtenirDadesAlumneVue", async function (req, res){
+  console.log(req.body)
   alumne=req.body.username
-  infoAlumne=await bbdd.ObtenirInfoUsuari(alumne)
+  infoAlumne=await bbdd.ObtenirInfoUsuari(alumne, connection)
   infoAlumne=JSON.parse(infoAlumne)
   idAlumne=infoAlumne.idAlum
   dades=bbdd.recollirStatsAlumne(idAlumne)
@@ -308,7 +309,7 @@ app.post("/obtenirDadesAlumneVue", async function (req, res){
     pregunta:""
   }]
   dades=await bbdd.recollirStatsAlumne(idAlumne)
-  const grupos = data.reduce((grupos, objeto) => {
+  const grupos = dades.reduce((grupos, objeto) => {
     const pregunta = objeto.pregunta;
     if (!grupos[pregunta]) {
       grupos[pregunta] = [];
@@ -325,6 +326,10 @@ app.post("/obtenirDadesAlumneVue", async function (req, res){
       dadesFinals[i].temps=dadesFinals[i].temps+grupos[i][j].temps
     }
     dadesFinals[i].temps=dadesFinals[i].temps/grupos[i].length
+  }
+
+  for(let i=0; i<dades.length;i++){
+    
   }
   res.json(dadesFinals)
 })//envia estadistiques a vue per generar grafics
