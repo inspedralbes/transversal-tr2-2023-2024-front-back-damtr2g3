@@ -1,7 +1,7 @@
 <template>
     <div>
         <img :class="{ 'attack-animation': store.user.isAttacking }" style="height: 250px;" :src="userImage" alt="User Image" />
-        <span>Puntuació: {{ userScore }}</span>
+
     </div>
 </template>
 
