@@ -25,14 +25,14 @@ export default {
         return {
             Stats: [{}],
             grafiques:[],
-            /*chartData: {
+            chartData:{} /*{
                 labels: [ this.Stats.pregunta ],
                 datasets: [ this.Stats.correcte - this.Stats.incorrecte  ]
-            },
-            chartData2: {
+            }*/,
+            chartData2:{}/* {
                 labels: [this.Stats.temps ],
                 datasets: [ this.Stats.pregunta  ]
-            },*/
+            }*/,
             chartOptions: {
                 responsive: true
             }
@@ -41,25 +41,25 @@ export default {
     },
     methods: {
         generarDades1(id){
-            chartData: {
-                labels: [ this.Stats[id].pregunta ];
+            this.chartData= {
+                labels: [ this.Stats[id].pregunta ],
                 datasets: [ this.Stats[id].correcte - this.Stats[id].incorrecte  ]
             }
-            return chartData
+            return this.chartData
         },
         generarDades2(id){
-            chartData: {
-                labels: [ this.Stats[id].temps ];
+            this.chartData2= {
+                labels: [ this.Stats[id].temps ],
                 datasets: [ this.Stats[id].pregunta ]
             }
-            return chartData
+            return this.chartData2
         }
     },
     created() {
         console.log("on created")
         obtenirStats(this.StoredUsername).then(response => {
             this.Stats = response  
-            console.log(Stats)          
+            console.log(this.Stats)          
         });
 
     },

@@ -303,42 +303,55 @@ app.get("/obtenirClassesRegistre", async function (req, res){
 })//envia un llistat de totes les classes per facilitar el registre d'un nou alumne
 
 app.post("/obtenirDadesAlumneVue", async function (req, res){
+
   console.log(req.body)
   alumne=req.body.username
   infoAlumne=await bbdd.ObtenirInfoUsuari(alumne, connection)
+ 
   infoAlumne=JSON.parse(infoAlumne)
-  idAlumne=infoAlumne.idAlum
-  dades=bbdd.recollirStatsAlumne(idAlumne)
-  dadesFinals:[{
+  console.log(infoAlumne)
+  console.log(infoAlumne[0].idAlum)
+  idAlumne=infoAlumne[0].idAlum
+  var dadesFinals=[{
     idAlum:idAlumne,
     correcta:0,
     incorrecta:0,
     temps:0,
     pregunta:""
   }]
+  console.log(dadesFinals)
   dades=await bbdd.recollirStatsAlumne(idAlumne)
-  const grupos = dades.reduce((grupos, objeto) => {
-    const pregunta = objeto.pregunta;
-    if (!grupos[pregunta]) {
-      grupos[pregunta] = [];
-    }
-    grupos[pregunta].push(objeto);
-  }) 
-  for(let i=0; i<grupos.length; i++){
-    dadesFinals[i].pregunta=grupos[i].pregunta
-    for(let j=0; j<grupos[i].length; j++){
-      if(grupos[i][j].correcta)
-        dadesFinals[i].correcta++
-      else
-        dadesFinals[i].incorrecta++;
-      dadesFinals[i].temps=dadesFinals[i].temps+grupos[i][j].temps
-    }
-    dadesFinals[i].temps=dadesFinals[i].temps/grupos[i].length
+  console.log(dades)  
+  for(var i=0; i<dades.length; i++){
+    if(dades[i].idAlum!=idAlumne)
+      dades.splice(i,1)
+  } 
+  console.log(dades)
+  for (let i = 0; i < dades.length; i++) {
+    for (let j = 0; j < dades.length; j++) {
+      if (dades[i].pregunta == dades[j].pregunta) {
+          dadesFinals[i].pregunta=dades[j].pregunta
+          if (dades[j].resultat) {
+            dadesFinals[i].correcta ++;
+          }
+          if (!dades[j].resultat) {
+            dadesFinals[i].incorrecta ++;
+          }
+          if(dades[j].temps >= 0){
+              var auxtime = dades[j].temps.split(',');
+              parseFloat(auxtime[0])
+              parseFloat(auxtime[1])
+              auxtime[0] += auxtime[1] / 1000; 
+              dadesFinals[i].temps += parseFloat(auxtime[0])
+          }
+          
+          //dades.splice(j, 1);
+      }
   }
+  dadesFinals[i].temps = dadesFinals[i].temps / (dadesFinals[i].correcta + dadesFinals[i].incorrecta)
+} 
 
-  for(let i=0; i<dades.length;i++){
-    
-  }
+  console.log(dadesFinals)
   res.json(dadesFinals)
 })//envia estadistiques a vue per generar grafics
 
