@@ -322,14 +322,23 @@ app.post("/obtenirDadesAlumneVue", async function (req, res){
   console.log(dadesFinals)
   dades=await bbdd.recollirStatsAlumne(idAlumne)
   console.log(dades)  
-  for(var i=0; i<dades.length; i++){
-    if(dades[i].playerId!=idAlumne)
+  for(let data of dades){
+    if(data.playerId!=idAlumne)
       dades.splice(i,1)
   } 
   console.log(dades)
   for (let i = 0; i < dades.length; i++) {
     for (let j = 0; j < dades.length; j++) {
       if (dades[i].question == dades[j].question) {
+        if (dadesFinals[i] === undefined) {
+          dadesFinals[i] = {
+            idAlum: idAlumne,
+            correcta: 0,
+            incorrecta: 0,
+            temps: 0,
+            pregunta: ""
+          };
+        }
           dadesFinals[i].pregunta=dades[j].question
           if (dades[j].resultat) {
             dadesFinals[i].correcta ++;
@@ -349,7 +358,7 @@ app.post("/obtenirDadesAlumneVue", async function (req, res){
       }
   }
   dadesFinals[i].temps = dadesFinals[i].temps / (dadesFinals[i].correcta + dadesFinals[i].incorrecta)
-} 
+  } 
 
   console.log(dadesFinals)
   res.json(dadesFinals)
