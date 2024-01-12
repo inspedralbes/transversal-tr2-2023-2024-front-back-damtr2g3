@@ -98,19 +98,6 @@ export default {
       }
     }
 
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-
-      return array;
-    }
-
-    const shuffledAnswers = computed(() => {
-      return shuffleArray(preguntesActuals.value[currentQuestionIndex.value].respostes);
-    });
-
     return {
       preguntesActuals,
       selectAnswer,
@@ -118,10 +105,23 @@ export default {
       nextQuestion,
       selectedAnswer,
       answerSelected,
-      currentQuestionIndex,
-      shuffleArray,
-      shuffledAnswers
+      currentQuestionIndex
     };
   },
+  computed: {
+    shuffledAnswers() {
+      const answersCopy = [...this.preguntesActuals[this.currentQuestionIndex].respostes];
+      this.shuffleArray(answersCopy);
+      return answersCopy;
+    },
+  },
+  methods: {
+    shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+  }
 }
 </script>
