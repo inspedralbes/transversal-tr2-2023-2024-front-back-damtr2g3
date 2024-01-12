@@ -6,7 +6,7 @@
           {{ preguntesActuals[currentQuestionIndex].pregunta }}
         </v-card-title>
         <v-row>
-          <v-col cols="6" v-for="respuesta in preguntesActuals[currentQuestionIndex].respostes" :key="respuesta">
+          <v-col cols="6" v-for="respuesta in shuffledAnswers" :key="respuesta">
             <v-btn class="ma-1" :disabled="answerSelected" :color="getButtonColor(respuesta)"
               @click="selectAnswer(respuesta)" style="width: 170px; height: 50px;">{{ respuesta.resposta }}</v-btn>
           </v-col>
@@ -98,6 +98,15 @@ export default {
       }
     }
 
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+
+      return array;
+    }
+
     return {
       preguntesActuals,
       selectAnswer,
@@ -107,6 +116,12 @@ export default {
       answerSelected,
       currentQuestionIndex
     };
+  },
+
+  computed: {
+    shuffledAnswers() {
+      return shuffleArray(this.preguntesActuals[this.currentQuestionIndex].respostes);
+    }
   }
 }
 </script>

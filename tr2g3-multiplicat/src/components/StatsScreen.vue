@@ -15,10 +15,10 @@
     </v-container>
 </template>
 <script>
-
 import { obtenirStats } from '@/services/CommunicationsManager';
 import { useAppStore } from '../store/app';
 import { Bar } from 'vue-chartjs'
+
 export default {
     //name: 'GestioEstaditiques',
     data() {
