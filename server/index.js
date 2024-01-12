@@ -323,22 +323,22 @@ app.post("/obtenirDadesAlumneVue", async function (req, res){
   dades=await bbdd.recollirStatsAlumne(idAlumne)
   console.log(dades)  
   for(var i=0; i<dades.length; i++){
-    if(dades[i].idAlum!=idAlumne)
+    if(dades[i].playerId!=idAlumne)
       dades.splice(i,1)
   } 
   console.log(dades)
   for (let i = 0; i < dades.length; i++) {
     for (let j = 0; j < dades.length; j++) {
-      if (dades[i].pregunta == dades[j].pregunta) {
-          dadesFinals[i].pregunta=dades[j].pregunta
+      if (dades[i].question == dades[j].question) {
+          dadesFinals[i].pregunta=dades[j].question
           if (dades[j].resultat) {
             dadesFinals[i].correcta ++;
           }
           if (!dades[j].resultat) {
             dadesFinals[i].incorrecta ++;
           }
-          if(dades[j].temps >= 0){
-              var auxtime = dades[j].temps.split(',');
+          if(dades[j].answerTime >= 0){
+              var auxtime = dades[j].answerTime.split(',');
               parseFloat(auxtime[0])
               parseFloat(auxtime[1])
               auxtime[0] += auxtime[1] / 1000; 
