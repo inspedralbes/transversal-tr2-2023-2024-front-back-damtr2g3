@@ -1,39 +1,34 @@
 <template>
-  <v-app>
-    <v-content>
-      <v-container>
-        <v-row>
-          <v-col cols="12">
-            <v-text-field
-              label="Resultat"
-              v-model="result"
-              outlined
-              readonly
-              class="display-1"
-            ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="4" v-for="number in numbers" :key="number">
-            <v-btn block outlined color="primary" @click="appendNumber(number)">{{ number }}</v-btn>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="4" v-for="operator in operators" :key="operator">
-            <v-btn block outlined color="secondary" @click="setOperator(operator)">{{ operator }}</v-btn>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="6">
-            <v-btn block outlined color="success" @click="calculate">=</v-btn>
-          </v-col>
-          <v-col cols="6">
-            <v-btn block outlined color="error" @click="clear">C</v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-content>
-  </v-app>
+  <v-content>
+    <v-container>
+      <v-row>
+        <v-col cols="12">
+          <v-text-field label="Resultat" v-model="result" outlined readonly solo flat class="display-1"></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="3" v-for="operator in operators" :key="operator">
+          <v-btn block color="secondary" @click="setOperator(operator)" class="small-button">{{ operator
+          }}</v-btn>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="4" v-for="number in numbers" :key="number" style="padding: 0.15rem;">
+          <v-btn block v-if="number != null" color="primary" @click="appendNumber(number)" class="small-button">{{
+            number
+          }}</v-btn>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="6">
+          <v-btn block color="success" @click="calculate" class="small-button">=</v-btn>
+        </v-col>
+        <v-col cols="6">
+          <v-btn block color="error" @click="clear" class="small-button">C</v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-content>
 </template>
 
 <script>
@@ -43,7 +38,7 @@ export default {
     secondNumber: '',
     operator: null,
     result: '',
-    numbers: [7, 8, 9, 4, 5, 6, 1, 2, 3, 0],
+    numbers: [7, 8, 9, 4, 5, 6, 1, 2, 3, , 0],
     operators: ['+', '-', '*', '/'],
   }),
   methods: {
@@ -76,3 +71,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.small-button {
+  font-size: 12px;
+  padding: 5px;
+}
+</style>
