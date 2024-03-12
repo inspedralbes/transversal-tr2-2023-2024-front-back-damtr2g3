@@ -108,6 +108,7 @@ async function updatePregunta(pregunta_id, pregunta_nova) {
       });
   });
 }
+
 module.exports = {
   connectToPreguntes,
   getAllPreguntes,
