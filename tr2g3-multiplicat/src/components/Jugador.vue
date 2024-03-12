@@ -1,7 +1,7 @@
 <template>
     <div>
         <img :class="{ 'attack-animation': store.user.isAttacking }" style="height: 250px;" :src="userImage" alt="User Image" />
-        <span>Puntuació: {{ userScore }}</span>
+
     </div>
 </template>
 
@@ -33,7 +33,7 @@ export default {
 
 @keyframes plunge {
     0% { transform: translate(0, 0); }
-    50% { transform: translate(38vw, -38vw); }
+    50% { transform: translate(70vw, -38vw); }
     100% { transform: translate(0, 0); }
 }
 </style>

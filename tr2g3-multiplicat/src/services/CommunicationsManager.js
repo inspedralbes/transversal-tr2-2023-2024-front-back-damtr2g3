@@ -1,4 +1,5 @@
 const BASEURL = 'http://multiplicatg3.dam.inspedralbes.cat:3817';
+const localURL = 'http://localhost:3817'
 
 export async function getUserInfo(user){
     const dades={
@@ -94,7 +95,7 @@ export async function obtenirStats(username){
         username: username,
     }
     
-    const response = await fetch(BASEURL + '/obtenirDadesAlumneVue',
+    const response = await fetch(localURL + '/obtenirDadesAlumneVue',
         {
             method: 'POST',
             headers: {

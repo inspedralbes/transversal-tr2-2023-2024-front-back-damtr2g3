@@ -4,15 +4,13 @@ export const useAppStore = defineStore("app", {
   state: () => ({
     //Jugador
     user: {
-      imatge:
-        "https://img.pokemondb.net/sprites/black-white/anim/back-normal/infernape.gif",
+      imatge: "./TobishimiB5.png",
       puntuacio: 0,
       isAttacking: false,
     },
     //Enemic
     enemic: {
-      imatge:
-        "https://oyster.ignimgs.com/mediawiki/apis.ign.com/pokemon-black-and-white/9/99/Pokemans_493.gif",
+      imatge: "./Phenelpha.png",
       enemyLife: 100,
       maxLife: 100,
       isHit: false,
@@ -20,9 +18,9 @@ export const useAppStore = defineStore("app", {
     },
     loginInfo: {
       loggedIn: false,
-      username: '',
-      image: '',
-      id:""
+      username: "",
+      image: "",
+      id: "",
     },
   }),
   actions: {
@@ -35,7 +33,7 @@ export const useAppStore = defineStore("app", {
         this.user.isAttacking = false;
       }, 1000);
     },
-    getHit(){
+    getHit() {
       setTimeout(() => {
         this.enemic.isHit = true;
         setTimeout(() => {
@@ -43,7 +41,7 @@ export const useAppStore = defineStore("app", {
         }, 1000);
       }, 500);
     },
-    dodge(){
+    dodge() {
       this.enemic.isDodging = true;
       setTimeout(() => {
         this.enemic.isDodging = false;
@@ -53,17 +51,17 @@ export const useAppStore = defineStore("app", {
       this.loginInfo.loggedIn = loggedIn;
       this.loginInfo.username = username;
       this.loginInfo.image = image;
-      this.id=id
+      this.id = id;
     },
-    isLoggedIn(){
+    isLoggedIn() {
       return this.loginInfo.loggedIn;
     },
-    getLoginInfo(){
+    getLoginInfo() {
       return this.loginInfo;
     },
-    logejarUser(username){
-      this.loggedIn=true;
-      this.username=username
+    logejarUser(username) {
+      this.loggedIn = true;
+      this.username = username;
     },
   },
 });

@@ -303,6 +303,7 @@ app.get("/obtenirClassesRegistre", async function (req, res) {
     res.json(classes)
 })//envia un llistat de totes les classes per facilitar el registre d'un nou alumne
 
+<<<<<<< HEAD
 app.post("/obtenirDadesAlumneVue", async function (req, res) {
     let dades = [];
     console.log(req.body)
@@ -364,6 +365,68 @@ app.post("/obtenirDadesAlumneVue", async function (req, res) {
     }
 
     res.json(dadesFinals)
+=======
+app.post("/obtenirDadesAlumneVue", async function (req, res){
+
+  console.log(req.body)
+  alumne=req.body.username
+  infoAlumne=await bbdd.ObtenirInfoUsuari(alumne, connection)
+ 
+  infoAlumne=JSON.parse(infoAlumne)
+  console.log(infoAlumne)
+  console.log(infoAlumne[0].idAlum)
+  idAlumne=infoAlumne[0].idAlum
+  var dadesFinals=[{
+    idAlum:idAlumne,
+    correcta:0,
+    incorrecta:0,
+    temps:0,
+    pregunta:""
+  }]
+  console.log(dadesFinals)
+  dades=await bbdd.recollirStatsAlumne(idAlumne)
+  console.log(dades)  
+  for(let data of dades){
+    if(data.playerId!=idAlumne)
+      dades.splice(i,1)
+  } 
+  console.log(dades)
+  for (let i = 0; i < dades.length; i++) {
+    for (let j = 0; j < dades.length; j++) {
+      if (dades[i].question == dades[j].question) {
+        if (dadesFinals[i] === undefined) {
+          dadesFinals[i] = {
+            idAlum: idAlumne,
+            correcta: 0,
+            incorrecta: 0,
+            temps: 0,
+            pregunta: ""
+          };
+        }
+          dadesFinals[i].pregunta=dades[j].question
+          if (dades[j].resultat) {
+            dadesFinals[i].correcta ++;
+          }
+          if (!dades[j].resultat) {
+            dadesFinals[i].incorrecta ++;
+          }
+          if(dades[j].answerTime >= 0){
+              var auxtime = dades[j].answerTime.split(',');
+              parseFloat(auxtime[0])
+              parseFloat(auxtime[1])
+              auxtime[0] += auxtime[1] / 1000; 
+              dadesFinals[i].temps += parseFloat(auxtime[0])
+          }
+          
+          //dades.splice(j, 1);
+      }
+  }
+  dadesFinals[i].temps = dadesFinals[i].temps / (dadesFinals[i].correcta + dadesFinals[i].incorrecta)
+  } 
+
+  console.log(dadesFinals)
+  res.json(dadesFinals)
+>>>>>>> a7bfe504cfce65261f6fd36d67a54cb5d6020d3f
 })//envia estadistiques a vue per generar grafics
 
 app.post("/obtenirStatsTextualsAlumne", function (req, res) {
